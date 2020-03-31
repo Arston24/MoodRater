@@ -189,6 +189,7 @@ class MainActivity : AppCompatActivity() {
 
                 Handler().postDelayed({
                     imageForBlur.visibility = View.GONE
+                    imageForBlur.setImageBitmap(null)
                 }, 400)
             }
         }
@@ -244,6 +245,7 @@ class MainActivity : AppCompatActivity() {
                     setMood()
                     root.setOnTouchListener(null)
                     setMoodButton.visibility = View.GONE
+                    imageForBlur.setImageBitmap(null)
                 }
             }
             true
