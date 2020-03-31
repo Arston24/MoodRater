@@ -76,11 +76,11 @@ class MainActivity : AppCompatActivity() {
                     imageForBlur.visibility = View.VISIBLE
                     val chip = findViewById<ViewGroup>(R.id.chip)
                     Blurry.with(this@MainActivity)
-                        .radius(10)
-                        .sampling(4)
+                        .radius(25)
+                        .sampling(12)
                         .async()
-                        .animate(500)
-                        .capture(chip)
+                        .animate(1000)
+                        .capture(root)
                         .into(imageForBlur)
                     val parentCenterY: Float = root.y + root.height / 2 - howMoodLabel.height / 2
                     howMoodLabel.animate().y(parentCenterY).duration = 500
@@ -105,11 +105,11 @@ class MainActivity : AppCompatActivity() {
             imageForBlur.visibility = View.VISIBLE
             val chip = findViewById<ViewGroup>(R.id.chip)
             Blurry.with(this@MainActivity)
-                .radius(10)
-                .sampling(8)
+                .radius(25)
+                .sampling(12)
                 .async()
                 .animate(1000)
-                .capture(chip)
+                .capture(root)
                 .into(imageForBlur)
             val parentCenterY: Float = root.y + root.height / 2 - howMoodLabel.height / 2
             val parentCenterX: Float = root.x + root.width / 2
@@ -153,7 +153,6 @@ class MainActivity : AppCompatActivity() {
 
     fun setMood() {
         titleMood.text = getString(R.string.mood_title)
-        imageForBlur.visibility = View.GONE
         frameSeek.post {
             val bitmapSeekBar = getViewBitmap(frameSeek)
             imageView.visibility = View.GONE
@@ -187,6 +186,10 @@ class MainActivity : AppCompatActivity() {
                     500
                 root.setOnTouchListener(null)
                 setMoodButton.visibility = View.GONE
+
+                Handler().postDelayed({
+                    imageForBlur.visibility = View.GONE
+                }, 400)
             }
         }
     }
