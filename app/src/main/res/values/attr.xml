@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="MoodSeekBar">
+        <attr name="root" format="reference" />
+    </declare-styleable>
+
+</resources>
