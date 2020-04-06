@@ -103,12 +103,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.redone.moodrater.MoodSeekBar
+    <com.redone.moodseekbar.MoodSeekBar
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:root="@+id/root">
-
-    </com.redone.moodrater.MoodSeekBar>
+    </com.redone.moodseekbar.MoodSeekBar>
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chip_group2"
@@ -203,13 +202,6 @@
         android:layout_marginBottom="12dp"
         android:background="@drawable/button_shape"
         android:drawablePadding="5dp"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/floatingMoodText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#F3B600"
         android:visibility="gone" />
 
     <!--    <View-->

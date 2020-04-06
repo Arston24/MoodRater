@@ -1,2 +1,3 @@
 rootProject.name='MoodRater'
 include ':app'
+include ':moodseekbar'

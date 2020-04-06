@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MoodRater</string>
+    <string name="how_mood">Как настроение?</string>
+    <string name="mood">Настроение:</string>
+    <string name="bad_mood">Плохое</string>
+    <string name="not_bad_mood">Неплохое</string>
+    <string name="nice_mood">Нормальное</string>
+    <string name="good_mood">Хорошее</string>
+    <string name="awesome_mood">Отличное</string>
+    <string name="mood_title">Настроение:</string>
+</resources>
