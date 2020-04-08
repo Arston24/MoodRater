@@ -1,13 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootSeekBar"
+    android:id="@+id/rootPopupView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/imageForBlur"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:scaleType="centerCrop"
+        android:visibility="visible" />
 
     <FrameLayout
         android:id="@+id/howMoodLabel"
@@ -29,18 +32,19 @@
             android:id="@+id/mainMoodText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginBottom="16dp"
+            android:layout_marginTop="28dp"
+            android:layout_marginStart="156dp"
             android:text="@string/nice_mood"
             android:textColor="#F3B600"
             android:textSize="16sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_gravity="bottom"
+            android:layout_marginTop="60dp"
             android:visibility="gone" />
 
         <FrameLayout
@@ -81,15 +85,6 @@
                 android:thumbOffset="12dp" />
         </FrameLayout>
 
-
-        <TextView
-            android:id="@+id/setMoodButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:layout_marginTop="100dp"
-            android:background="@drawable/button_shape"
-            android:visibility="gone" />
     </FrameLayout>
 
     <TextView
@@ -99,5 +94,12 @@
         android:textColor="#F3B600"
         android:visibility="gone" />
 
-
+    <TextView
+        android:id="@+id/setMoodButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/button_shape"
+        android:visibility="visible" />
 </FrameLayout>

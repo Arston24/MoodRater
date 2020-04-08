@@ -12,7 +12,8 @@
     <LinearLayout
         android:id="@+id/chip"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/chip_group"
@@ -96,6 +97,11 @@
                 app:chipSurfaceColor="#FFEB3B" />
         </com.google.android.material.chip.ChipGroup>
 
+        <com.redone.moodseekbar.MoodSeekBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:root="@+id/root" />
+
     </LinearLayout>
 
     <ImageView
@@ -103,11 +109,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.redone.moodseekbar.MoodSeekBar
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:root="@+id/root">
-    </com.redone.moodseekbar.MoodSeekBar>
+
+
+
+
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chip_group2"
