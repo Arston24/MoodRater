@@ -3,12 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/imageForBlur"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
     <FrameLayout
         android:id="@+id/howMoodLabel"
         android:layout_width="match_parent"
@@ -29,8 +23,8 @@
             android:id="@+id/mainMoodText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="34dp"
+            android:layout_marginStart="158dp"
             android:text="@string/nice_mood"
             android:textColor="#F3B600"
             android:textSize="16sp"
@@ -41,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_gravity="bottom"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <FrameLayout
             android:id="@+id/frameSeek"
@@ -75,6 +69,7 @@
                 android:layout_gravity="end|bottom"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
+                android:progress="0"
                 android:progressDrawable="@drawable/seekbar_style"
                 android:splitTrack="false"
                 android:thumb="@drawable/rater_thumb"

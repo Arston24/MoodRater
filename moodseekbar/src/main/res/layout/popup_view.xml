@@ -12,6 +12,12 @@
         android:scaleType="centerCrop"
         android:visibility="visible" />
 
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="#F10909"/>
+
     <FrameLayout
         android:id="@+id/howMoodLabel"
         android:layout_width="match_parent"
@@ -32,13 +38,11 @@
             android:id="@+id/mainMoodText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginStart="156dp"
+            android:layout_marginStart="158dp"
+            android:layout_marginTop="34dp"
             android:text="@string/nice_mood"
             android:textColor="#F3B600"
-            android:textSize="16sp"
-            android:visibility="visible" />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -59,7 +63,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|center"
                 android:layout_marginEnd="36dp"
-                android:gravity="center"
                 android:text="@string/awesome_mood"
                 android:textColor="#979393" />
 
@@ -82,7 +85,8 @@
                 android:progressDrawable="@drawable/seekbar_style"
                 android:splitTrack="false"
                 android:thumb="@drawable/rater_thumb"
-                android:thumbOffset="12dp" />
+                android:thumbOffset="12dp"
+                android:visibility="gone" />
         </FrameLayout>
 
     </FrameLayout>
