@@ -239,14 +239,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
                 setupPopup()
 
-                popupView.howMoodLabel.mainMoodText.x = titleMood.x
+                popupView.howMoodLabel.mainMoodText.x = titleMood.x + context.dpToPx(16)
                 popupView.howMoodLabel.mainMoodText.y = context.dpToPx(32)
                 popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
                 popupView.howMoodLabel.imageView.y = imageView.y
 
                 popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
 
-                val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x, parentCenterX - popupView.mainMoodText.width / 2)
+                val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x + context.dpToPx(16), parentCenterX - popupView.mainMoodText.width / 2)
                 translateAnimator.duration = DURATION
                 translateAnimator.addUpdateListener {
                     val value = translateAnimator.animatedValue as Float
@@ -263,15 +263,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 set.playTogether(translateAnimator, sizeAnimator)
                 set.start()
 
-                val dip = 8f
-                val px = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    dip,
-                    resources.displayMetrics
-                )
-
                 popupView.imageView.animate().scaleX(1f).scaleY(1f).y(popupView.moodSeekBar.y + moodSeekBar.height)
-                    .x(moodSeekBar.x - px).duration = DURATION
+                    .x(moodSeekBar.x - context.dpToPx(8)).duration = DURATION
                 Handler().postDelayed({
                     popupView.imageView.visibility = View.GONE
                     popupView.moodSeekBar.visibility = View.VISIBLE
@@ -368,7 +361,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         popupView.howMoodLabel.animate().y(howMoodLabelLocation[1] - getStatusBarHeight()).duration = DURATION
 
                         popupView.imageView.animate().scaleX(0.5f).scaleY(0.5f)
-                            .y(popupView.mainMoodText.y - popupView.imageView.height / 4)
+                            .y(popupView.mainMoodText.y - popupView.imageView.height / 4 - context.dpToPx(4))
                             .x(view.width.toFloat() / 4).duration =
                             500
                     }
