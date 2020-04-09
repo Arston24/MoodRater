@@ -8,10 +8,12 @@ import android.content.ContextWrapper
 import android.content.res.TypedArray
 import android.graphics.*
 import android.os.Handler
+import android.util.ArrayMap
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.*
 import android.widget.*
+import extension.dpToPx
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.popup_view.view.*
 import timber.log.Timber
@@ -31,6 +33,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     lateinit var textIntoBar2: TextView
     lateinit var howMoodLabel: ViewGroup
     val screenHeight = resources.displayMetrics.heightPixels
+
+    val sizeTextViewMap: ArrayMap<String, Float> = ArrayMap()
 
     lateinit var frameSeek: ViewGroup
     lateinit var imageView: ImageView
@@ -182,17 +186,23 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
                         popupWindow.showAtLocation(root, 0, 0, 0)
                         popupView.moodSeekBar.visibility = View.VISIBLE
-                        setupPopup()
 
-                        popupView.moodSeekBar.progress = moodSeekBar.progress
+                        popupView.howMoodLabel.post {
+                            popupView.howMoodLabel.mainMoodText.y = context.dpToPx(32)
 
-                        popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
+                            setupPopup()
 
-                        val locationPopup = IntArray(2)
-                        popupView.howMoodLabel.getLocationInWindow(locationPopup)
+                            popupView.moodSeekBar.progress = moodSeekBar.progress
 
-                        titleMood.text = resources.getString(R.string.how_mood)
-                        popupView.titleMood.text = resources.getString(R.string.how_mood)
+                            popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
+
+                            val locationPopup = IntArray(2)
+                            popupView.howMoodLabel.getLocationInWindow(locationPopup)
+
+                            titleMood.text = resources.getString(R.string.how_mood)
+                            popupView.titleMood.text = resources.getString(R.string.how_mood)
+                        }
+
                     }
                 }
             }
@@ -223,28 +233,26 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             popupWindow.showAtLocation(root, 0, 0, 0)
 
             popupView.frameSeek.post {
-//                popupView.imageView.setImageDrawable(imageView.drawable)
 
                 val parentCenterY: Float = (screenHeight / 4 - howMoodLabel.height / 2).toFloat()
                 val parentCenterX: Float = view.x + view.width / 2
 
                 setupPopup()
+
                 popupView.howMoodLabel.mainMoodText.x = titleMood.x
-                popupView.howMoodLabel.mainMoodText.y = mainMoodText.y
+                popupView.howMoodLabel.mainMoodText.y = context.dpToPx(32)
                 popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
                 popupView.howMoodLabel.imageView.y = imageView.y
 
                 popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
 
-                Timber.e("parent x ${parentCenterX} dm ${resources.displayMetrics.widthPixels / 2} text width ${popupView.mainMoodText.width}")
-
-                mainMoodText.textSize = 16f
-                val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x, parentCenterX - mainMoodText.width / 2)
+                val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x, parentCenterX - popupView.mainMoodText.width / 2)
                 translateAnimator.duration = DURATION
                 translateAnimator.addUpdateListener {
                     val value = translateAnimator.animatedValue as Float
                     popupView.mainMoodText.x = value
                 }
+
                 val sizeAnimator = ValueAnimator.ofFloat(22f, 16f)
                 sizeAnimator.duration = DURATION
                 sizeAnimator.addUpdateListener {

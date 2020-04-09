@@ -12,11 +12,11 @@
         android:scaleType="centerCrop"
         android:visibility="visible" />
 
-    <View
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="#F10909"/>
+<!--    <View-->
+<!--        android:layout_width="1dp"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_gravity="center"-->
+<!--        android:background="#F10909"/>-->
 
     <FrameLayout
         android:id="@+id/howMoodLabel"
@@ -38,8 +38,8 @@
             android:id="@+id/mainMoodText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="158dp"
-            android:layout_marginTop="34dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center"
             android:text="@string/nice_mood"
             android:textColor="#F3B600"
             android:textSize="16sp" />
