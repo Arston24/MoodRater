@@ -2,7 +2,8 @@
 <resources>
 
     <declare-styleable name="MoodSeekBar">
-        <attr name="root" format="reference" />
+        <attr name="titleTextColor" format="color" />
+        <attr name="moodTextColor" format="color" />
     </declare-styleable>
 
 </resources>

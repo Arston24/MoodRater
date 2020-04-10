@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.res.Resources
 import android.content.res.TypedArray
 import android.graphics.*
 import android.os.Handler
@@ -13,6 +14,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.*
 import android.widget.*
+import androidx.core.content.ContextCompat
 import extension.dpToPx
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.popup_view.view.*
@@ -41,6 +43,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     lateinit var titleMood: TextView
     lateinit var floatingMoodText: TextView
+    private var titleTextColor = 0
+    var moodTextColor = 0
+
 
     lateinit var popupView: View
     var howMoodLabelLocation = IntArray(2)
@@ -49,7 +54,11 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     var startY: Float = 0f
 
-    private val a: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.MoodSeekBar, 0, 0)
+    init {
+        val a: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.MoodSeekBar, 0, 0)
+        titleTextColor = a.getColor(R.styleable.MoodSeekBar_titleTextColor, Color.WHITE)
+        moodTextColor = a.getColor(R.styleable.MoodSeekBar_moodTextColor, ContextCompat.getColor(context, R.color.default_mood_color))
+    }
 
     override fun onAttachedToWindow() {
         Timber.plant(Timber.DebugTree())
@@ -69,8 +78,12 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         textIntoBar2 = view.findViewById(R.id.textIntoBar2)
         titleMood = view.findViewById(R.id.titleMood)
         floatingMoodText = view.findViewById(R.id.floatingMoodText)
+        titleMood.setTextColor(titleTextColor)
+        mainMoodText.setTextColor(moodTextColor)
 
         popupView = inflater.inflate(R.layout.popup_view, null)
+        popupView.titleMood.setTextColor(titleTextColor)
+        popupView.mainMoodText.setTextColor(moodTextColor)
 
         popupWindow = PopupWindow(
             popupView,
