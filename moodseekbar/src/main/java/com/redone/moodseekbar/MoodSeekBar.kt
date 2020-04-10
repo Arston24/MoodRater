@@ -17,6 +17,7 @@ import extension.dpToPx
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.popup_view.view.*
 import timber.log.Timber
+import kotlin.math.abs
 
 
 class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
@@ -489,7 +490,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         window?.decorView?.getWindowVisibleDisplayFrame(rectangle)
         val statusBarHeight = rectangle.top
         val contentViewTop = window?.findViewById<View>(Window.ID_ANDROID_CONTENT)?.top ?: 0
-        return statusBarHeight - contentViewTop.toFloat()
+        return abs(contentViewTop.toFloat() - statusBarHeight)
     }
 
     companion object {
