@@ -5,13 +5,11 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.res.Resources
 import android.content.res.TypedArray
 import android.graphics.*
 import android.os.Handler
 import android.util.ArrayMap
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -44,7 +42,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     lateinit var titleMood: TextView
     lateinit var floatingMoodText: TextView
     private var titleTextColor = 0
-    var moodTextColor = 0
+    private var moodTextColor = 0
+    private var progress = 0
 
 
     lateinit var popupView: View
@@ -58,6 +57,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         val a: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.MoodSeekBar, 0, 0)
         titleTextColor = a.getColor(R.styleable.MoodSeekBar_titleTextColor, Color.WHITE)
         moodTextColor = a.getColor(R.styleable.MoodSeekBar_moodTextColor, ContextCompat.getColor(context, R.color.default_mood_color))
+        progress = a.getInt(R.styleable.MoodSeekBar_seekBarProgress, 0)
     }
 
     override fun onAttachedToWindow() {
@@ -80,6 +80,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         floatingMoodText = view.findViewById(R.id.floatingMoodText)
         titleMood.setTextColor(titleTextColor)
         mainMoodText.setTextColor(moodTextColor)
+        moodSeekBar.progress = progress
 
         popupView = inflater.inflate(R.layout.popup_view, null)
         popupView.titleMood.setTextColor(titleTextColor)
@@ -186,6 +187,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 if (moodSeekBar.thumb.alpha == 0) {
                     moodSeekBar.thumb.alpha = 255
+                    popupView.setOnTouchListener(rootTouchListener())
 
                     Blurry.with(context)
                         .radius(12)
@@ -231,7 +233,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         imageView.setOnClickListener {
             howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
-            root.setOnTouchListener(rootTouchListener())
+            popupView.setOnTouchListener(rootTouchListener())
             titleMood.text = resources.getString(R.string.how_mood)
             popupView.titleMood.text = resources.getString(R.string.how_mood)
 
@@ -259,7 +261,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
                 popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
 
-                val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x + context.dpToPx(16), parentCenterX - popupView.mainMoodText.width / 2)
+                val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x + context.dpToPx(16), parentCenterX - popupView.mainMoodText.width / 1.81f)
                 translateAnimator.duration = DURATION
                 translateAnimator.addUpdateListener {
                     val value = translateAnimator.animatedValue as Float
@@ -378,7 +380,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                             .x(view.width.toFloat() / 4).duration =
                             500
                     }
-                    root.setOnTouchListener(null)
+                    popupView.setOnTouchListener(null)
                     setMoodButton.visibility = View.GONE
 
                     Handler().postDelayed({
@@ -401,7 +403,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             val y = event?.y?.toInt() ?: 0
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    floatingMoodText.visibility = View.VISIBLE
+                    popupView.floatingMoodText.visibility = View.VISIBLE
                     val progress = when {
                         x < seekBarPosition[0] -> {
                             0
@@ -414,9 +416,10 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         }
                     }
                     moodSeekBar.progress = progress
-                    floatingMoodText.text = mainMoodText.text
-                    floatingMoodText.x = x.toFloat()
-                    floatingMoodText.y = y.toFloat() - 200f
+                    popupView.moodSeekBar.progress = progress
+                    popupView.floatingMoodText.text = mainMoodText.text
+                    popupView.floatingMoodText.x = x.toFloat()
+                    popupView.floatingMoodText.y = y.toFloat() - 200f
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val progress = when {
@@ -431,16 +434,20 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         }
                     }
                     moodSeekBar.progress = progress
-                    floatingMoodText.text = mainMoodText.text
-                    floatingMoodText.x = x.toFloat()
-                    floatingMoodText.y = y.toFloat() - 200f
+                    popupView.moodSeekBar.progress = progress
+                    popupView.floatingMoodText.text = mainMoodText.text
+                    popupView.floatingMoodText.x = x.toFloat()
+                    popupView.floatingMoodText.y = y.toFloat() - 200f
                 }
                 MotionEvent.ACTION_UP -> {
-                    floatingMoodText.visibility = View.GONE
+                    popupView.floatingMoodText.visibility = View.GONE
                     setMood(true)
-                    root.setOnTouchListener(null)
+                    popupView.setOnTouchListener(null)
                     setMoodButton.visibility = View.GONE
-                    imageForBlur.setImageBitmap(null)
+                    Handler().postDelayed({
+                        popupView.imageForBlur.setImageBitmap(null)
+                        popupWindow.dismiss()
+                    }, 600)
                 }
             }
             true
