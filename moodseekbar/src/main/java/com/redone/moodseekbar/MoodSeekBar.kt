@@ -165,6 +165,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 progress: Int,
                 fromUser: Boolean
             ) {
+                popupView.moodSeekBar.progress = progress
                 if (progress < 20) {
                     mainMoodText.text = resources.getString(R.string.bad_mood)
                     popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.bad_mood)
@@ -196,27 +197,29 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         .capture(rootScreenshot)
                         .into(popupView.imageForBlur)
 
+                    popupWindow.showAtLocation(root, 0, 0, 0)
+
                     howMoodLabel.post {
                         howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
-                        popupWindow.showAtLocation(root, 0, 0, 0)
                         popupView.moodSeekBar.visibility = View.VISIBLE
 
                         popupView.howMoodLabel.post {
-                            popupView.howMoodLabel.mainMoodText.y = context.dpToPx(32)
-
                             setupPopup()
+                            popupView.howMoodLabel.mainMoodText.post {
+                                popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
+                                popupView.howMoodLabel.mainMoodText.y = context.dpToPx(36)
 
-                            popupView.moodSeekBar.progress = moodSeekBar.progress
+//                                popupView.moodSeekBar.progress = moodSeekBar.progress
 
-                            popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
+                                popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
 
-                            val locationPopup = IntArray(2)
-                            popupView.howMoodLabel.getLocationInWindow(locationPopup)
+                                val locationPopup = IntArray(2)
+                                popupView.howMoodLabel.getLocationInWindow(locationPopup)
 
-                            titleMood.text = resources.getString(R.string.how_mood)
-                            popupView.titleMood.text = resources.getString(R.string.how_mood)
+                                titleMood.text = resources.getString(R.string.how_mood)
+                                popupView.titleMood.text = resources.getString(R.string.how_mood)
+                            }
                         }
-
                     }
                 }
             }
