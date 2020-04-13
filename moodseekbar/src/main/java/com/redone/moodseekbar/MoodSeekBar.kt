@@ -237,24 +237,24 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             popupView.titleMood.text = resources.getString(R.string.how_mood)
 
             Blurry.with(context)
-                    .radius(12)
-                    .sampling(16)
-                    .async()
-                    .animate(1000)
-                    .capture(rootScreenshot)
-                    .into(popupView.imageForBlur)
-
+                .radius(12)
+                .sampling(16)
+                .async()
+                .animate(1000)
+                .capture(rootScreenshot)
+                .into(popupView.imageForBlur)
             popupWindow.showAtLocation(root, 0, 0, 0)
 
-            popupView.frameSeek.post {
-
+            popupView.howMoodLabel.post {
                 val parentCenterY: Float = (screenHeight / 4 - howMoodLabel.height / 2).toFloat()
                 val parentCenterX: Float = view.x + view.width / 2
 
                 setupPopup()
 
-                popupView.howMoodLabel.mainMoodText.x = titleMood.x + context.dpToPx(16)
-                popupView.howMoodLabel.mainMoodText.y = context.dpToPx(32)
+                popupView.howMoodLabel.mainMoodText.post {
+                    popupView.howMoodLabel.mainMoodText.x = titleMood.x
+                    popupView.howMoodLabel.mainMoodText.y = context.dpToPx(31)
+                }
                 popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
                 popupView.howMoodLabel.imageView.y = imageView.y
 
@@ -286,7 +286,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     popupView.textIntoBar.visibility = View.VISIBLE
                 }, DURATION)
             }
-
         }
     }
 
