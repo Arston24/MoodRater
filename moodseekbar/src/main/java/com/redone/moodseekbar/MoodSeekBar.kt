@@ -246,45 +246,44 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             popupWindow.showAtLocation(root, 0, 0, 0)
 
             popupView.howMoodLabel.post {
+                popupView.howMoodLabel.imageView.y = imageView.y
                 val parentCenterY: Float = (screenHeight / 4 - howMoodLabel.height / 2).toFloat()
                 val parentCenterX: Float = view.x + view.width / 2
-
                 setupPopup()
 
                 popupView.howMoodLabel.mainMoodText.post {
                     popupView.howMoodLabel.mainMoodText.x = titleMood.x
                     popupView.howMoodLabel.mainMoodText.y = context.dpToPx(31)
+                    popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
+
+                    popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
+
+                    val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x, parentCenterX - popupView.mainMoodText.width / 1.81f)
+                    translateAnimator.duration = DURATION
+                    translateAnimator.addUpdateListener {
+                        val value = translateAnimator.animatedValue as Float
+                        popupView.mainMoodText.x = value
+                    }
+
+                    val sizeAnimator = ValueAnimator.ofFloat(22f, 16f)
+                    sizeAnimator.duration = DURATION
+                    sizeAnimator.addUpdateListener {
+                        val value = sizeAnimator.animatedValue as Float
+                        popupView.mainMoodText.textSize = value
+                    }
+                    val set = AnimatorSet()
+                    set.playTogether(translateAnimator, sizeAnimator)
+                    set.start()
+
+                    popupView.imageView.animate().scaleX(1f).scaleY(1f).y(popupView.moodSeekBar.y + moodSeekBar.height)
+                        .x(moodSeekBar.x - context.dpToPx(8)).duration = DURATION
+                    Handler().postDelayed({
+                        popupView.imageView.visibility = View.GONE
+                        popupView.moodSeekBar.visibility = View.VISIBLE
+                        popupView.textIntoBar2.visibility = View.VISIBLE
+                        popupView.textIntoBar.visibility = View.VISIBLE
+                    }, DURATION)
                 }
-                popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
-                popupView.howMoodLabel.imageView.y = imageView.y
-
-                popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
-
-                val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x + context.dpToPx(16), parentCenterX - popupView.mainMoodText.width / 1.81f)
-                translateAnimator.duration = DURATION
-                translateAnimator.addUpdateListener {
-                    val value = translateAnimator.animatedValue as Float
-                    popupView.mainMoodText.x = value
-                }
-
-                val sizeAnimator = ValueAnimator.ofFloat(22f, 16f)
-                sizeAnimator.duration = DURATION
-                sizeAnimator.addUpdateListener {
-                    val value = sizeAnimator.animatedValue as Float
-                    popupView.mainMoodText.textSize = value
-                }
-                val set = AnimatorSet()
-                set.playTogether(translateAnimator, sizeAnimator)
-                set.start()
-
-                popupView.imageView.animate().scaleX(1f).scaleY(1f).y(popupView.moodSeekBar.y + moodSeekBar.height)
-                    .x(moodSeekBar.x - context.dpToPx(8)).duration = DURATION
-                Handler().postDelayed({
-                    popupView.imageView.visibility = View.GONE
-                    popupView.moodSeekBar.visibility = View.VISIBLE
-                    popupView.textIntoBar2.visibility = View.VISIBLE
-                    popupView.textIntoBar.visibility = View.VISIBLE
-                }, DURATION)
             }
         }
     }
