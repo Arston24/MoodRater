@@ -17,7 +17,6 @@ import extension.dpToPx
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.popup_view.view.*
 import timber.log.Timber
-import kotlin.math.abs
 
 
 class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
@@ -127,7 +126,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 mainMoodText.text = resources.getString(R.string.awesome_mood)
                 popupView.mainMoodText.text = resources.getString(R.string.awesome_mood)
             }
-            Timber.e("check")
             setMood(false)
         }
 
@@ -239,12 +237,12 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             popupView.titleMood.text = resources.getString(R.string.how_mood)
 
             Blurry.with(context)
-                .radius(12)
-                .sampling(16)
-                .async()
-                .animate(1000)
-                .capture(rootScreenshot)
-                .into(popupView.imageForBlur)
+                    .radius(12)
+                    .sampling(16)
+                    .async()
+                    .animate(1000)
+                    .capture(rootScreenshot)
+                    .into(popupView.imageForBlur)
 
             popupWindow.showAtLocation(root, 0, 0, 0)
 
@@ -377,7 +375,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         popupView.howMoodLabel.animate().y(howMoodLabelLocation[1] - getStatusBarHeight()).duration = DURATION
 
                         popupView.imageView.animate().scaleX(0.5f).scaleY(0.5f)
-                            .y(popupView.mainMoodText.y - popupView.imageView.height / 4 - context.dpToPx(4))
+                            .y(popupView.mainMoodText.y - popupView.imageView.height / 4 - context.dpToPx(5))
                             .x(view.width.toFloat() / 4).duration =
                             500
                     }
@@ -489,8 +487,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         val window = getActivity()?.window
         window?.decorView?.getWindowVisibleDisplayFrame(rectangle)
         val statusBarHeight = rectangle.top
-        val contentViewTop = window?.findViewById<View>(Window.ID_ANDROID_CONTENT)?.top ?: 0
-        return abs(contentViewTop.toFloat() - statusBarHeight)
+        return statusBarHeight.toFloat()
     }
 
     companion object {
