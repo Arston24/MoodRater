@@ -1,5 +1,6 @@
 package com.redone.moodseekbar
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.app.Activity
@@ -42,11 +43,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     lateinit var imageView: ImageView
 
     lateinit var titleMood: TextView
+    lateinit var floatingMoodText: TextView
     private var titleTextColor = 0
     private var moodTextColor = 0
     private var progress = 0
     private var moodsArray: Array<CharSequence>? = null
     private var colorsArray: IntArray? = null
+
+    private var progressAnimator = ValueAnimator.ofInt(0)
 
 
     lateinit var popupView: View
@@ -95,6 +99,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         textIntoBar = view.findViewById(R.id.textIntoBar)
         textIntoBar2 = view.findViewById(R.id.textIntoBar2)
         titleMood = view.findViewById(R.id.titleMood)
+        floatingMoodText = view.findViewById(R.id.floatingMoodText)
         titleMood.setTextColor(titleTextColor)
         mainMoodText.setTextColor(moodTextColor)
         moodSeekBar.progress = progress
@@ -132,7 +137,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         } else {
             popupView.moodSeekBar.progress = moodSeekBar.progress
             mainMoodText.visibility = View.VISIBLE
-            setMoodText(progress)
+            setMoodText(progress, false, false)
             setMood(false)
         }
 
@@ -140,14 +145,24 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         popupView.moodSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                setMoodText(progress)
-                moodSeekBar.progress = progress
+                setMoodText(progress, false, false)
+//                moodSeekBar.progress = progress
+
+//                val gd = GradientDrawable(
+//                        GradientDrawable.Orientation.LEFT_RIGHT, colorsArray)
+//                gd.cornerRadius = 0f
+//                val thumb = moodSeekBar.thumb as LayerDrawable
+//                val ring = createThumbDrawable(context)
+//                popupView.moodSeekBar.moodSeekBar.thumb = ring
+////                ring.colorFilter = PorterDuffColorFilter(, PorterDuff.Mode.ADD)
+//                popupView.moodSeekBar.invalidate()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                setMoodText(popupView.moodSeekBar.progress, true, false)
             }
         })
 
@@ -157,8 +172,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 progress: Int,
                 fromUser: Boolean
             ) {
-                setMoodText(progress)
-                popupView.moodSeekBar.progress = progress
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -186,7 +200,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                 popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
                                 popupView.howMoodLabel.mainMoodText.y = context.dpToPx(36)
 
-//                                popupView.moodSeekBar.progress = moodSeekBar.progress
+                                popupView.moodSeekBar.progress = moodSeekBar.progress
 
                                 popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
 
@@ -202,7 +216,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
             }
         })
 
@@ -410,13 +423,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     popupView.moodSeekBar.progress = progress
                 }
                 MotionEvent.ACTION_UP -> {
-                    setMood(true)
                     popupView.setOnTouchListener(null)
                     setMoodButton.visibility = View.GONE
-                    Handler().postDelayed({
-                        popupView.imageForBlur.setImageBitmap(null)
-                        popupWindow.dismiss()
-                    }, 600)
+                    setMoodText(popupView.moodSeekBar.progress, true, true)
                 }
             }
             true
@@ -460,7 +469,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         return statusBarHeight.toFloat()
     }
 
-    private fun setMoodText(progress: Int) {
+    private fun setMoodText(progress: Int, animate: Boolean, close: Boolean) {
         moodsArray?.let {
             var start = 0
             var end = 0
@@ -470,6 +479,37 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 if (progress in start..end) {
                     mainMoodText.text = item
                     popupView.howMoodLabel.mainMoodText.text = item
+                    val animator = ValueAnimator.ofInt(progress, end - 1)
+                    if (animate && !animator.isRunning) {
+                        animator.duration = 100
+                        animator.addUpdateListener {
+                            val value = animator.animatedValue as Int
+                            popupView.moodSeekBar.progress = value
+                        }
+                        animator.start()
+                        animator.addListener(object : Animator.AnimatorListener {
+                            override fun onAnimationRepeat(animation: Animator?) {
+
+                            }
+
+                            override fun onAnimationEnd(animation: Animator?) {
+                                if (close) {
+                                    setMood(true)
+                                    Handler().postDelayed({
+                                        popupView.imageForBlur.setImageBitmap(null)
+                                        popupWindow.dismiss()
+                                    }, 600)
+                                }
+                            }
+
+                            override fun onAnimationCancel(animation: Animator?) {
+                            }
+
+                            override fun onAnimationStart(animation: Animator?) {
+                            }
+
+                        })
+                    }
                 }
                 start = end
             }
@@ -493,6 +533,25 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             ClipDrawable.HORIZONTAL)
         return LayerDrawable(arrayOf<Drawable>(
             clipDrawable, shape))
+    }
+
+    private fun createThumbDrawable(context: Context): Drawable? {
+
+        val ringShape = ShapeDrawable()
+        ringShape.paint.style = Paint.Style.STROKE
+        ringShape.paint.strokeWidth = 2f
+        ringShape.paint.color = ContextCompat.getColor(context, R.color.default_mood_color)
+
+//        val roundRectShape = RoundRectShape(floatArrayOf(64f, 64f, 64f, 64f, 64f, 64f, 64f, 64f), null, null)
+        val shape = ShapeDrawable()
+        shape.paint.style = Paint.Style.FILL
+        shape.paint.color = ContextCompat.getColor(context, android.R.color.transparent)
+        shape.paint.style = Paint.Style.STROKE
+        shape.paint.strokeWidth = 100f
+        shape.paint.color = ContextCompat.getColor(context, R.color.white)
+        val clipDrawable = ClipDrawable(ringShape, Gravity.START,
+            ClipDrawable.HORIZONTAL)
+        return LayerDrawable(arrayOf<Drawable>(shape))
     }
 
     companion object {
