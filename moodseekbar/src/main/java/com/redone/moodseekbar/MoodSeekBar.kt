@@ -44,6 +44,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     private var titleTextColor = 0
     private var moodTextColor = 0
     private var progress = 0
+    var moodsArray: Array<CharSequence>? = null
 
 
     lateinit var popupView: View
@@ -58,6 +59,12 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         titleTextColor = a.getColor(R.styleable.MoodSeekBar_titleTextColor, Color.WHITE)
         moodTextColor = a.getColor(R.styleable.MoodSeekBar_moodTextColor, ContextCompat.getColor(context, R.color.default_mood_color))
         progress = a.getInt(R.styleable.MoodSeekBar_seekBarProgress, 0)
+        moodsArray = a.getTextArray(R.styleable.MoodSeekBar_android_entries)
+
+        if (moodsArray == null) {
+            moodsArray = resources.getTextArray(R.array.moodsArray)
+        }
+        a.recycle()
     }
 
     override fun onAttachedToWindow() {
@@ -110,46 +117,16 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         } else {
             popupView.moodSeekBar.progress = moodSeekBar.progress
             mainMoodText.visibility = View.VISIBLE
-            if (moodSeekBar.progress < 20) {
-                mainMoodText.text = resources.getString(R.string.bad_mood)
-                popupView.mainMoodText.text = resources.getString(R.string.bad_mood)
-            } else if (moodSeekBar.progress in 20..39) {
-                mainMoodText.text = resources.getString(R.string.not_bad_mood)
-                popupView.mainMoodText.text = resources.getString(R.string.not_bad_mood)
-            } else if (moodSeekBar.progress in 40..59) {
-                mainMoodText.text = resources.getString(R.string.nice_mood)
-                popupView.mainMoodText.text = resources.getString(R.string.nice_mood)
-            } else if (moodSeekBar.progress in 60..79) {
-                mainMoodText.text = resources.getString(R.string.good_mood)
-                popupView.mainMoodText.text = resources.getString(R.string.good_mood)
-            } else {
-                mainMoodText.text = resources.getString(R.string.awesome_mood)
-                popupView.mainMoodText.text = resources.getString(R.string.awesome_mood)
-            }
+            setMoodText(progress)
             setMood(false)
         }
 
         root = view.rootView
 
-
         popupView.moodSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (progress < 20) {
-                    mainMoodText.text = resources.getString(R.string.bad_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.bad_mood)
-                } else if (progress in 20..39) {
-                    mainMoodText.text = resources.getString(R.string.not_bad_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.not_bad_mood)
-                } else if (progress in 40..59) {
-                    mainMoodText.text = resources.getString(R.string.nice_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.nice_mood)
-                } else if (progress in 60..79) {
-                    mainMoodText.text = resources.getString(R.string.good_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.good_mood)
-                } else {
-                    mainMoodText.text = resources.getString(R.string.awesome_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.awesome_mood)
-                }
+                setMoodText(progress)
+                moodSeekBar.progress = progress
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -165,23 +142,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 progress: Int,
                 fromUser: Boolean
             ) {
+                setMoodText(progress)
                 popupView.moodSeekBar.progress = progress
-                if (progress < 20) {
-                    mainMoodText.text = resources.getString(R.string.bad_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.bad_mood)
-                } else if (progress in 20..39) {
-                    mainMoodText.text = resources.getString(R.string.not_bad_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.not_bad_mood)
-                } else if (progress in 40..59) {
-                    mainMoodText.text = resources.getString(R.string.nice_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.nice_mood)
-                } else if (progress in 60..79) {
-                    mainMoodText.text = resources.getString(R.string.good_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.good_mood)
-                } else {
-                    mainMoodText.text = resources.getString(R.string.awesome_mood)
-                    popupView.howMoodLabel.mainMoodText.text = resources.getString(R.string.awesome_mood)
-                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -454,7 +416,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
     }
 
-    fun getViewBitmap(view: View): Bitmap {
+    private fun getViewBitmap(view: View): Bitmap {
         val returnedBitmap =
             Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(returnedBitmap)
@@ -489,6 +451,22 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         window?.decorView?.getWindowVisibleDisplayFrame(rectangle)
         val statusBarHeight = rectangle.top
         return statusBarHeight.toFloat()
+    }
+
+    private fun setMoodText(progress: Int) {
+        moodsArray?.let {
+            var start = 0
+            var end = 0
+            moodsArray?.forEach { item ->
+                val arraySize = moodsArray?.size ?: 0
+                end += 100 / arraySize
+                if (progress in start..end) {
+                    mainMoodText.text = item
+                    popupView.howMoodLabel.mainMoodText.text = item
+                }
+                start = end
+            }
+        }
     }
 
     companion object {

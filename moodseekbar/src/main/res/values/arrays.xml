@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="moodsArray">
+        <item>Плохое</item>
+        <item>Неплохое</item>
+        <item>Нормальное</item>
+        <item>Хорошее</item>
+        <item>Отличное</item>
+    </string-array>
+</resources>
