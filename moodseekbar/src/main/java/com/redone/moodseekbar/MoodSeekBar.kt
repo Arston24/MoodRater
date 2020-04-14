@@ -42,7 +42,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     lateinit var imageView: ImageView
 
     lateinit var titleMood: TextView
-    lateinit var floatingMoodText: TextView
     private var titleTextColor = 0
     private var moodTextColor = 0
     private var progress = 0
@@ -96,7 +95,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         textIntoBar = view.findViewById(R.id.textIntoBar)
         textIntoBar2 = view.findViewById(R.id.textIntoBar2)
         titleMood = view.findViewById(R.id.titleMood)
-        floatingMoodText = view.findViewById(R.id.floatingMoodText)
         titleMood.setTextColor(titleTextColor)
         mainMoodText.setTextColor(moodTextColor)
         moodSeekBar.progress = progress
@@ -382,7 +380,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             val y = event?.y?.toInt() ?: 0
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    popupView.floatingMoodText.visibility = View.VISIBLE
                     val progress = when {
                         x < seekBarPosition[0] -> {
                             0
@@ -396,9 +393,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     }
                     moodSeekBar.progress = progress
                     popupView.moodSeekBar.progress = progress
-                    popupView.floatingMoodText.text = mainMoodText.text
-                    popupView.floatingMoodText.x = x.toFloat()
-                    popupView.floatingMoodText.y = y.toFloat() - 200f
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val progress = when {
@@ -414,12 +408,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     }
                     moodSeekBar.progress = progress
                     popupView.moodSeekBar.progress = progress
-                    popupView.floatingMoodText.text = mainMoodText.text
-                    popupView.floatingMoodText.x = x.toFloat()
-                    popupView.floatingMoodText.y = y.toFloat() - 200f
                 }
                 MotionEvent.ACTION_UP -> {
-                    popupView.floatingMoodText.visibility = View.GONE
                     setMood(true)
                     popupView.setOnTouchListener(null)
                     setMoodButton.visibility = View.GONE

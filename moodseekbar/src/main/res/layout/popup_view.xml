@@ -92,13 +92,6 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/floatingMoodText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#F3B600"
-        android:visibility="gone" />
-
-    <TextView
         android:id="@+id/setMoodButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
