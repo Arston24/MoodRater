@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.TypedArray
 import android.graphics.*
+import android.graphics.drawable.*
+import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Handler
 import android.util.ArrayMap
 import android.util.AttributeSet
@@ -44,7 +46,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     private var titleTextColor = 0
     private var moodTextColor = 0
     private var progress = 0
-    var moodsArray: Array<CharSequence>? = null
+    private var moodsArray: Array<CharSequence>? = null
+    private var colorsArray: IntArray? = null
 
 
     lateinit var popupView: View
@@ -59,11 +62,20 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         titleTextColor = a.getColor(R.styleable.MoodSeekBar_titleTextColor, Color.WHITE)
         moodTextColor = a.getColor(R.styleable.MoodSeekBar_moodTextColor, ContextCompat.getColor(context, R.color.default_mood_color))
         progress = a.getInt(R.styleable.MoodSeekBar_seekBarProgress, 0)
-        moodsArray = a.getTextArray(R.styleable.MoodSeekBar_android_entries)
+        moodsArray = a.getTextArray(R.styleable.MoodSeekBar_strings)
+
+        val colorsId: Int = a.getResourceId(R.styleable.MoodSeekBar_colors, 0)
+        if (colorsId != 0) {
+            colorsArray = a.resources.getIntArray(colorsId)
+        }
 
         if (moodsArray == null) {
             moodsArray = resources.getTextArray(R.array.moodsArray)
         }
+        if (colorsArray == null) {
+            colorsArray = resources.getIntArray(R.array.colorsArray)
+        }
+
         a.recycle()
     }
 
@@ -93,11 +105,16 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupView.titleMood.setTextColor(titleTextColor)
         popupView.mainMoodText.setTextColor(moodTextColor)
 
+        val progressDrawable = createProgressDrawable(context)
+
         popupWindow = PopupWindow(
             popupView,
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         )
+
+        moodSeekBar.progressDrawable = progressDrawable
+        popupView.moodSeekBar.progressDrawable = progressDrawable
 
         setupPopup()
 
@@ -416,7 +433,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
     }
 
-    private fun getViewBitmap(view: View): Bitmap {
+    fun getViewBitmap(view: View): Bitmap {
         val returnedBitmap =
             Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(returnedBitmap)
@@ -467,6 +484,25 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 start = end
             }
         }
+    }
+
+    private fun createProgressDrawable(context: Context): Drawable? {
+        val gd = GradientDrawable(
+            GradientDrawable.Orientation.LEFT_RIGHT, colorsArray)
+        gd.cornerRadius = 0f
+        gd.cornerRadii = floatArrayOf(64f, 64f, 64f, 64f, 64f, 64f, 64f, 64f)
+
+        val roundRectShape = RoundRectShape(floatArrayOf(64f, 64f, 64f, 64f, 64f, 64f, 64f, 64f), null, null)
+        val shape = ShapeDrawable(roundRectShape)
+        shape.paint.style = Paint.Style.FILL
+        shape.paint.color = ContextCompat.getColor(context, android.R.color.transparent)
+        shape.paint.style = Paint.Style.STROKE
+        shape.paint.strokeWidth = 1f
+        shape.paint.color = ContextCompat.getColor(context, R.color.bar_shape_color)
+        val clipDrawable = ClipDrawable(gd, Gravity.START,
+            ClipDrawable.HORIZONTAL)
+        return LayerDrawable(arrayOf<Drawable>(
+            clipDrawable, shape))
     }
 
     companion object {

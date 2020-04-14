@@ -6,4 +6,5 @@
     <color name="white">#FFFFFF</color>
     <color name="background">#272525</color>
     <color name="default_mood_color">#F3B600</color>
+    <color name="bar_shape_color">#807E7E</color>
 </resources>

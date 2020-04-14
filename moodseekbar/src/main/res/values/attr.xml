@@ -5,7 +5,8 @@
         <attr name="titleTextColor" format="color" />
         <attr name="moodTextColor" format="color" />
         <attr name="seekBarProgress" format="integer" />
-        <attr name="android:entries"/>
+        <attr name="strings" format="reference" />
+        <attr name="colors" format="reference" />
     </declare-styleable>
 
 </resources>

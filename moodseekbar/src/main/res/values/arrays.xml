@@ -7,4 +7,13 @@
         <item>Хорошее</item>
         <item>Отличное</item>
     </string-array>
+
+    <array name="colorsArray">
+        <item>#FF003F</item>
+        <item>#FF5057</item>
+        <item>#F0B60A</item>
+        <item>#03CB34</item>
+        <item>#1CD8DA</item>
+    </array>
+
 </resources>
