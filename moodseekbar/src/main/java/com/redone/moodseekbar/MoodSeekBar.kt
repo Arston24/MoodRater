@@ -122,8 +122,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupView.moodSeekBar.progressDrawable = progressDrawable
         val thumb = createThumbDrawable(context, 0)
         popupView.moodSeekBar.thumb = thumb
-        moodSeekBar.thumb = thumb
+//        moodSeekBar.thumb = thumb
         popupView.moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
+        moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
 
         setupPopup()
 
@@ -168,7 +169,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 progress: Int,
                 fromUser: Boolean
             ) {
-
+                popupView.moodSeekBar.progress = progress
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -183,6 +184,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         .animate(1000)
                         .capture(rootScreenshot)
                         .into(popupView.imageForBlur)
+                    popupView.moodSeekBar.progress = moodSeekBar.progress
 
                     popupWindow.showAtLocation(root, 0, 0, 0)
 
@@ -191,6 +193,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         popupView.moodSeekBar.visibility = View.VISIBLE
 
                         popupView.howMoodLabel.post {
+                            popupView.moodSeekBar.progress = moodSeekBar.progress
+
                             setupPopup()
                             popupView.howMoodLabel.mainMoodText.post {
                                 popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
