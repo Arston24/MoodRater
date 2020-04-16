@@ -186,18 +186,18 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         .into(popupView.imageForBlur)
                     popupView.moodSeekBar.progress = moodSeekBar.progress
 
-                    popupWindow.showAtLocation(root, 0, 0, 0)
 
                     howMoodLabel.post {
                         howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
                         popupView.moodSeekBar.visibility = View.VISIBLE
+                        setupPopup()
+                        popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
+                        popupWindow.showAtLocation(root, 0, 0, 0)
 
                         popupView.howMoodLabel.post {
                             popupView.moodSeekBar.progress = moodSeekBar.progress
 
-                            setupPopup()
                             popupView.howMoodLabel.mainMoodText.post {
-                                popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
                                 popupView.howMoodLabel.mainMoodText.y = context.dpToPx(36)
 
                                 popupView.moodSeekBar.progress = moodSeekBar.progress
@@ -245,7 +245,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 val parentCenterX: Float = view.x + view.width / 2
                 setupPopup()
 
-                popupView.howMoodLabel.mainMoodText.post{
+                popupView.howMoodLabel.mainMoodText.post {
                     popupView.howMoodLabel.mainMoodText.x = titleMood.x
                     popupView.howMoodLabel.mainMoodText.y = context.dpToPx(31)
 
