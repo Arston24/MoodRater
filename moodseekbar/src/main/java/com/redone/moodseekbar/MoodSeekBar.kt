@@ -285,7 +285,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupView.howMoodLabel.y = howMoodLabelLocation[1] - getStatusBarHeight()
     }
 
-    fun setMood(animate: Boolean) {
+    private fun setMood(animate: Boolean) {
         titleMood.text = resources.getString(R.string.mood_title)
         mainMoodText.visibility = View.VISIBLE
         popupView.titleMood.text = resources.getString(R.string.mood_title)
@@ -377,7 +377,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
     }
 
-    fun rootTouchListener(): View.OnTouchListener {
+    private fun rootTouchListener(): View.OnTouchListener {
         return View.OnTouchListener { v, event ->
             root.performClick()
             val seekBarPosition = IntArray(2)
@@ -427,7 +427,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
     }
 
-    fun getViewBitmap(view: View): Bitmap {
+    private fun getViewBitmap(view: View): Bitmap {
         val returnedBitmap =
             Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(returnedBitmap)
@@ -544,6 +544,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         ring.paint.color = color
         return LayerDrawable(arrayOf<Drawable>(
             thumb, ring))
+    }
+
+    fun setColors(colorsArray: IntArray) {
+        this.colorsArray = colorsArray
+    }
+
+    fun setMoods(moodsArray: Array<CharSequence>) {
+        this.moodsArray = moodsArray
     }
 
     companion object {
