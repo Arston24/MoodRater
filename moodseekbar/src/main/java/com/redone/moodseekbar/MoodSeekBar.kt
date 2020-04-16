@@ -53,13 +53,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     private var progressAnimator = ValueAnimator.ofInt(0)
 
-
     lateinit var popupView: View
     var howMoodLabelLocation = IntArray(2)
 
     val rootScreenshot = getActivity()?.window?.decorView?.rootView
 
     var startY: Float = 0f
+    private val thumb = ShapeDrawable(OvalShape())
+    private val ring = ShapeDrawable(OvalShape())
 
     init {
         val a: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.MoodSeekBar, 0, 0)
@@ -119,6 +120,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         moodSeekBar.progressDrawable = progressDrawable
         popupView.moodSeekBar.progressDrawable = progressDrawable
+        val thumb = createThumbDrawable(context, 0)
+        popupView.moodSeekBar.thumb = thumb
+        popupView.moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
 
         setupPopup()
 
@@ -470,8 +474,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 if (progress in start..end) {
                     mainMoodText.text = item
                     popupView.howMoodLabel.mainMoodText.text = item
-                    val thumb = createThumbDrawable(context, colorsArray?.get(index) ?: 0)
-                    popupView.moodSeekBar.thumb = thumb
+                    createThumbDrawable(context, colorsArray?.get(index) ?: 0)
                     val animator = ValueAnimator.ofInt(progress, end - 1)
                     if (animate && !animator.isRunning) {
                         animator.duration = 100
@@ -512,7 +515,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     private fun createProgressDrawable(context: Context): Drawable? {
         val gd = GradientDrawable(
             GradientDrawable.Orientation.LEFT_RIGHT, colorsArray)
-        gd.cornerRadius = 0f
         gd.cornerRadii = floatArrayOf(context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40))
 
         val roundRectShape = RoundRectShape(floatArrayOf(context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40), context.dpToPx(40)), null, null)
@@ -520,7 +522,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         shape.paint.style = Paint.Style.FILL
         shape.paint.color = ContextCompat.getColor(context, android.R.color.transparent)
         shape.paint.style = Paint.Style.STROKE
-        shape.paint.strokeWidth = 1f
+        shape.paint.strokeWidth = context.dpToPx(1)
         shape.paint.color = ContextCompat.getColor(context, R.color.bar_shape_color)
         val clipDrawable = ClipDrawable(gd, Gravity.START,
             ClipDrawable.HORIZONTAL)
@@ -529,8 +531,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     }
 
     private fun createThumbDrawable(context: Context, color: Int): Drawable? {
-        val thumb = ShapeDrawable(OvalShape())
-        val ring = ShapeDrawable(OvalShape())
         thumb.intrinsicWidth = context.dpToPx(60).toInt()
         thumb.intrinsicHeight = context.dpToPx(60).toInt()
         thumb.paint.style = Paint.Style.FILL
