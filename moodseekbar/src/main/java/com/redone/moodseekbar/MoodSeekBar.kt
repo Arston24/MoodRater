@@ -33,8 +33,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     lateinit var mainMoodText: TextView
     lateinit var setMoodButton: TextView
-    lateinit var textIntoBar: TextView
-    lateinit var textIntoBar2: TextView
+    lateinit var textIntoBarEnd: TextView
+    lateinit var textIntoBarStart: TextView
     lateinit var howMoodLabel: ViewGroup
     val screenHeight = resources.displayMetrics.heightPixels
 
@@ -57,7 +57,10 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     var howMoodLabelLocation = IntArray(2)
 
     val rootScreenshot = getActivity()?.window?.decorView?.rootView
-    val animationIsRun = false
+    lateinit var titleTextQuestion: String
+    lateinit var titleTextMood: String
+    lateinit var startSeekbarText: String
+    lateinit var endSeekbarText: String
 
     var startY: Float = 0f
     private val thumb = ShapeDrawable(OvalShape())
@@ -69,6 +72,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         moodTextColor = a.getColor(R.styleable.MoodSeekBar_moodTextColor, ContextCompat.getColor(context, R.color.default_mood_color))
         progress = a.getInt(R.styleable.MoodSeekBar_seekBarProgress, 0)
         moodsArray = a.getTextArray(R.styleable.MoodSeekBar_strings)
+        titleTextQuestion = a.getString(R.styleable.MoodSeekBar_titleTextQuestion)
+            ?: resources.getString(R.string.how_mood)
+        titleTextMood = a.getString(R.styleable.MoodSeekBar_titleTextMood)
+            ?: resources.getString(R.string.mood_title)
+        startSeekbarText = a.getString(R.styleable.MoodSeekBar_startSeekbarText)
+            ?: resources.getString(R.string.bad_mood)
+        endSeekbarText = a.getString(R.styleable.MoodSeekBar_endSeekbarText)
+            ?: resources.getString(R.string.awesome_mood)
 
         val colorsId: Int = a.getResourceId(R.styleable.MoodSeekBar_colors, 0)
         if (colorsId != 0) {
@@ -99,17 +110,24 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         frameSeek = view.findViewById(R.id.frameSeek)
         setMoodButton = view.findViewById(R.id.setMoodButton)
         imageView = view.findViewById(R.id.imageView)
-        textIntoBar = view.findViewById(R.id.textIntoBar)
-        textIntoBar2 = view.findViewById(R.id.textIntoBar2)
+        textIntoBarEnd = view.findViewById(R.id.textIntoBarEnd)
+        textIntoBarStart = view.findViewById(R.id.textIntoBarStart)
         titleMood = view.findViewById(R.id.titleMood)
         floatingMoodText = view.findViewById(R.id.floatingMoodText)
         titleMood.setTextColor(titleTextColor)
         mainMoodText.setTextColor(moodTextColor)
         moodSeekBar.progress = progress
 
+        textIntoBarStart.text = startSeekbarText
+        textIntoBarEnd.text = endSeekbarText
+        titleMood.text = titleTextQuestion
+
         popupView = inflater.inflate(R.layout.popup_view, null)
         popupView.titleMood.setTextColor(titleTextColor)
         popupView.mainMoodText.setTextColor(moodTextColor)
+        popupView.textIntoBarEnd.text = endSeekbarText
+        popupView.textIntoBarStart.text = startSeekbarText
+        popupView.titleMood.text = titleTextQuestion
 
         root = view.rootView
 
@@ -211,8 +229,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                     val locationPopup = IntArray(2)
                                     popupView.howMoodLabel.getLocationInWindow(locationPopup)
 
-                                    titleMood.text = resources.getString(R.string.how_mood)
-                                    popupView.titleMood.text = resources.getString(R.string.how_mood)
+                                    titleMood.text = titleTextQuestion
+                                    popupView.titleMood.text = titleTextQuestion
                                 }
                             }
                         }
@@ -234,8 +252,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
             howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
             popupView.setOnTouchListener(null)
-            titleMood.text = resources.getString(R.string.how_mood)
-            popupView.titleMood.text = resources.getString(R.string.how_mood)
+            titleMood.text = titleTextQuestion
+            popupView.titleMood.text = titleTextQuestion
 
             Blurry.with(context)
                 .radius(12)
@@ -286,8 +304,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         popupView.setMoodButton.visibility = View.VISIBLE
                         popupView.imageView.visibility = View.GONE
                         popupView.moodSeekBar.visibility = View.VISIBLE
-                        popupView.textIntoBar2.visibility = View.VISIBLE
-                        popupView.textIntoBar.visibility = View.VISIBLE
+                        popupView.textIntoBarStart.visibility = View.VISIBLE
+                        popupView.textIntoBarEnd.visibility = View.VISIBLE
                     }, DURATION)
                 }
             }
@@ -306,9 +324,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     private fun setMood(animate: Boolean) {
         popupView.setMoodButton.visibility = View.GONE
-        titleMood.text = resources.getString(R.string.mood_title)
         mainMoodText.visibility = View.VISIBLE
-        popupView.titleMood.text = resources.getString(R.string.mood_title)
+        popupView.titleMood.text = titleTextMood
+        titleMood.text = titleTextMood
 
         frameSeek.post {
             val bitmapSeekBar = if (popupView.moodSeekBar.visibility == View.VISIBLE) {
@@ -326,11 +344,11 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             moodSeekBar.visibility = View.GONE
             popupView.moodSeekBar.visibility = View.GONE
 
-            textIntoBar2.visibility = View.GONE
-            popupView.textIntoBar2.visibility = View.GONE
+            textIntoBarStart.visibility = View.GONE
+            popupView.textIntoBarStart.visibility = View.GONE
 
-            textIntoBar.visibility = View.GONE
-            popupView.textIntoBar.visibility = View.GONE
+            textIntoBarEnd.visibility = View.GONE
+            popupView.textIntoBarEnd.visibility = View.GONE
             imageView.post {
                 if (!animate) {
                     view.y = startY
@@ -558,7 +576,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 //                    val animator = ValueAnimator.ofInt(progress, end - 1)
                     val animator = if (progress in 0..10) {
                         ValueAnimator.ofInt(progress, 0)
-                    } else if (progress >= 100 - (100 / (arraySize )) - 1) {
+                    } else if (progress >= 100 - (100 / (arraySize)) - 1) {
                         ValueAnimator.ofInt(progress, 100)
                     } else {
                         ValueAnimator.ofInt(progress, (end - 1))
@@ -639,6 +657,22 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     fun setMoods(moodsArray: Array<CharSequence>) {
         this.moodsArray = moodsArray
+    }
+
+    fun setTitleQuestionText(titleText: String) {
+        this.titleTextQuestion = titleText
+    }
+
+    fun setTitleMoodText(titleText: String) {
+        this.titleTextMood = titleText
+    }
+
+    fun setStartSeekBarText(startSeekbarText: String) {
+        this.startSeekbarText = startSeekbarText
+    }
+
+    fun setEndSeekBarText(endSeekbarText: String) {
+        this.endSeekbarText = endSeekbarText
     }
 
     companion object {

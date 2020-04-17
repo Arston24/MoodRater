@@ -7,6 +7,10 @@
         <attr name="seekBarProgress" format="integer" />
         <attr name="strings" format="reference" />
         <attr name="colors" format="reference" />
+        <attr name="titleTextQuestion" format="string" />
+        <attr name="titleTextMood" format="string" />
+        <attr name="startSeekbarText" format="string" />
+        <attr name="endSeekbarText" format="string" />
     </declare-styleable>
 
 </resources>
