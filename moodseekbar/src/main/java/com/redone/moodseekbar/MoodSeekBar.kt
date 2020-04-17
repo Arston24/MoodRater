@@ -262,7 +262,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
                     popupView.howMoodLabel.animate().y((screenHeight - getStatusBarHeight()) / 2.toFloat() - howMoodLabel.height / 2).duration = DURATION
 
-                    val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x, parentCenterX - popupView.mainMoodText.width / 1.81f)
+                    val translateAnimator = ValueAnimator.ofFloat(popupView.titleMood.x, popupView.howMoodLabel.width / 2 - popupView.mainMoodText.width / 2 + (popupView.mainMoodText.text.length * context.dpToPx(3)) / 3)
                     translateAnimator.duration = DURATION
                     translateAnimator.addUpdateListener {
                         val value = translateAnimator.animatedValue as Float
