@@ -484,6 +484,66 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         return statusBarHeight.toFloat()
     }
 
+//    private fun setMoodText(progress: Int, animate: Boolean, close: Boolean) {
+//        moodsArray?.let {
+//            var start = 1
+//            var end = 0
+//            if (progress == 0) {
+//                mainMoodText.text = moodsArray?.get(0)
+//                popupView.howMoodLabel.mainMoodText.text = moodsArray?.get(0)
+//            }
+//            moodsArray?.forEachIndexed { index, item ->
+//                val arraySize = moodsArray?.size ?: 0
+//                end += (100 / (arraySize - 1))
+//               if (progress in start..end && index < moodsArray?.size!! - 1) {
+//                    mainMoodText.text = moodsArray?.get(index + 1)
+//                    popupView.howMoodLabel.mainMoodText.text = moodsArray?.get(index + 1)
+//                    createThumbDrawable(context, colorsArray?.get(index) ?: 0)
+////                    val animator = ValueAnimator.ofInt(progress, end - 1)
+//                   Timber.e("progress $progress")
+//                    val animator = if (progress == 0) {
+//                        ValueAnimator.ofInt(progress, 0)
+//                    } else if (progress >= 100 - (100 / (arraySize - 1)) - 1) {
+//                        ValueAnimator.ofInt(progress, 100)
+//                    } else {
+//                        ValueAnimator.ofInt(progress, (end - 1))
+//                    }
+//                    if (animate && !animator.isRunning) {
+//                        animator.duration = 100
+//                        animator.addUpdateListener {
+//                            val value = animator.animatedValue as Int
+//                            popupView.moodSeekBar.progress = value
+//                        }
+//                        animator.start()
+//                        animator.addListener(object : Animator.AnimatorListener {
+//                            override fun onAnimationRepeat(animation: Animator?) {
+//
+//                            }
+//
+//                            override fun onAnimationEnd(animation: Animator?) {
+//                                if (close) {
+//                                    setMood(true)
+//                                    Handler().postDelayed({
+//                                        popupView.imageForBlur.setImageBitmap(null)
+//                                        popupWindow.dismiss()
+//                                    }, 600)
+//                                }
+//                            }
+//
+//                            override fun onAnimationCancel(animation: Animator?) {
+//                            }
+//
+//                            override fun onAnimationStart(animation: Animator?) {
+//                            }
+//
+//                        })
+//                    }
+//                    start = end
+//                }
+//            }
+//        }
+//    }
+
     private fun setMoodText(progress: Int, animate: Boolean, close: Boolean) {
         moodsArray?.let {
             var start = 0
@@ -495,7 +555,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     mainMoodText.text = item
                     popupView.howMoodLabel.mainMoodText.text = item
                     createThumbDrawable(context, colorsArray?.get(index) ?: 0)
-                    val animator = ValueAnimator.ofInt(progress, end - 1)
+//                    val animator = ValueAnimator.ofInt(progress, end - 1)
+                    val animator = if (progress in 0..10) {
+                        ValueAnimator.ofInt(progress, 0)
+                    } else if (progress >= 100 - (100 / (arraySize )) - 1) {
+                        ValueAnimator.ofInt(progress, 100)
+                    } else {
+                        ValueAnimator.ofInt(progress, (end - 1))
+                    }
                     if (animate && !animator.isRunning) {
                         animator.duration = 100
                         animator.addUpdateListener {
