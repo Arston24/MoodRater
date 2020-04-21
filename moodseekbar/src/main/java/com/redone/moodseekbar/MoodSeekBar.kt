@@ -14,6 +14,7 @@ import android.graphics.drawable.shapes.RoundRectShape
 import android.os.Handler
 import android.util.ArrayMap
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -118,6 +119,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         mainMoodText.setTextColor(moodTextColor)
         moodSeekBar.progress = progress
 
+
         textIntoBarStart.text = startSeekbarText
         textIntoBarEnd.text = endSeekbarText
         titleMood.text = titleTextQuestion
@@ -139,6 +141,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             FrameLayout.LayoutParams.MATCH_PARENT
         )
 
+
         moodSeekBar.progressDrawable = progressDrawable
         popupView.moodSeekBar.progressDrawable = progressDrawable
         val thumb = createThumbDrawable(context, 0)
@@ -149,12 +152,21 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         setupPopup()
 
-        popupWindow.isOutsideTouchable = true
-        popupWindow.isClippingEnabled = true
         popupWindow.isFocusable = true
-        popupWindow.inputMethodMode = PopupWindow.INPUT_METHOD_NOT_NEEDED
-        popupWindow.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED
         popupWindow.contentView.isFocusableInTouchMode = true
+
+        popupWindow.contentView.requestFocus()
+        popupWindow.contentView.setOnKeyListener { v, keyCode, event ->
+            Log.e("NO", "1")
+            if (keyCode == KeyEvent.KEYCODE_BACK &&
+                event.action == KeyEvent.ACTION_DOWN) {
+                Log.e("DAAA 1", "11")
+            }
+            false
+        }
+
+
+
 
         view.post {
             startY = view.y
@@ -502,84 +514,35 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         return statusBarHeight.toFloat()
     }
 
-//    private fun setMoodText(progress: Int, animate: Boolean, close: Boolean) {
-//        moodsArray?.let {
-//            var start = 1
-//            var end = 0
-//            if (progress == 0) {
-//                mainMoodText.text = moodsArray?.get(0)
-//                popupView.howMoodLabel.mainMoodText.text = moodsArray?.get(0)
-//            }
-//            moodsArray?.forEachIndexed { index, item ->
-//                val arraySize = moodsArray?.size ?: 0
-//                end += (100 / (arraySize - 1))
-//               if (progress in start..end && index < moodsArray?.size!! - 1) {
-//                    mainMoodText.text = moodsArray?.get(index + 1)
-//                    popupView.howMoodLabel.mainMoodText.text = moodsArray?.get(index + 1)
-//                    createThumbDrawable(context, colorsArray?.get(index) ?: 0)
-////                    val animator = ValueAnimator.ofInt(progress, end - 1)
-//                   Timber.e("progress $progress")
-//                    val animator = if (progress == 0) {
-//                        ValueAnimator.ofInt(progress, 0)
-//                    } else if (progress >= 100 - (100 / (arraySize - 1)) - 1) {
-//                        ValueAnimator.ofInt(progress, 100)
-//                    } else {
-//                        ValueAnimator.ofInt(progress, (end - 1))
-//                    }
-//                    if (animate && !animator.isRunning) {
-//                        animator.duration = 100
-//                        animator.addUpdateListener {
-//                            val value = animator.animatedValue as Int
-//                            popupView.moodSeekBar.progress = value
-//                        }
-//                        animator.start()
-//                        animator.addListener(object : Animator.AnimatorListener {
-//                            override fun onAnimationRepeat(animation: Animator?) {
-//
-//                            }
-//
-//                            override fun onAnimationEnd(animation: Animator?) {
-//                                if (close) {
-//                                    setMood(true)
-//                                    Handler().postDelayed({
-//                                        popupView.imageForBlur.setImageBitmap(null)
-//                                        popupWindow.dismiss()
-//                                    }, 600)
-//                                }
-//                            }
-//
-//                            override fun onAnimationCancel(animation: Animator?) {
-//                            }
-//
-//                            override fun onAnimationStart(animation: Animator?) {
-//                            }
-//
-//                        })
-//                    }
-//                    start = end
-//                }
-//            }
-//        }
-//    }
 
     private fun setMoodText(progress: Int, animate: Boolean, close: Boolean) {
         moodsArray?.let {
             var start = 0
             var end = 0
+            var center = 0
+            if (progress == 0) {
+                mainMoodText.text = moodsArray?.get(0)
+                popupView.howMoodLabel.mainMoodText.text = moodsArray?.get(0)
+            }
             moodsArray?.forEachIndexed { index, item ->
                 val arraySize = moodsArray?.size ?: 0
-                end += 100 / arraySize
+                val chunk = 100 / (arraySize - 1)
+                center = start + ((100 / (arraySize - 1)) / 2)
+                end += if(start == 0){
+                    (chunk / 2) - 1
+                } else {
+                    100 / (arraySize - 1)
+                }
                 if (progress in start..end) {
                     mainMoodText.text = item
                     popupView.howMoodLabel.mainMoodText.text = item
                     createThumbDrawable(context, colorsArray?.get(index) ?: 0)
-//                    val animator = ValueAnimator.ofInt(progress, end - 1)
-                    val animator = if (progress in 0..10) {
+                    popupView.mainMoodText.setTextColor(colorsArray?.get(index) ?: 0)
+                    mainMoodText.setTextColor(colorsArray?.get(index) ?: 0)
+                    val animator = if (start == 0) {
                         ValueAnimator.ofInt(progress, 0)
-                    } else if (progress >= 100 - (100 / (arraySize)) - 1) {
-                        ValueAnimator.ofInt(progress, 100)
                     } else {
-                        ValueAnimator.ofInt(progress, (end - 1))
+                        ValueAnimator.ofInt(progress, center)
                     }
                     if (animate && !animator.isRunning) {
                         animator.duration = 100
@@ -612,7 +575,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         })
                     }
                 }
-                start = end
+                start = end + 1
             }
         }
     }
