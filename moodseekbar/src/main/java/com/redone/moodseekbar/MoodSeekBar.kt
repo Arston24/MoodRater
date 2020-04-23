@@ -58,7 +58,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     val rootScreenshot = getActivity()?.window?.decorView?.rootView
 
-    lateinit var titleTextQuestion: String
+    var titleTextQuestion: String? = null
+
     lateinit var titleTextMood: String
     lateinit var startSeekbarText: String
     lateinit var endSeekbarText: String
@@ -209,7 +210,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                 .into(popupView.imageForBlur)
                             popupView.moodSeekBar.progress = moodSeekBar.progress
 
-
                             howMoodLabel.post {
                                 howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
                                 popupView.moodSeekBar.visibility = View.VISIBLE
@@ -334,8 +334,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 frameSeek.scaleY = 0.5f
                 popupView.frameSeek.scaleY = 0.5f
 
-                frameSeek.y = mainMoodText.y - imageView.height / 4
-                popupView.frameSeek.y = mainMoodText.y - imageView.height / 4
+                frameSeek.y = mainMoodText.y - context.dpToPx(16)
+                popupView.frameSeek.y = mainMoodText.y - context.dpToPx(76)
 
                 frameSeek.x = view.width.toFloat() / 4
                 popupView.frameSeek.x = view.width.toFloat() / 4
