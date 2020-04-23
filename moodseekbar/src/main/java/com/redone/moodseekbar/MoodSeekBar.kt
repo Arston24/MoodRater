@@ -191,12 +191,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         } else {
             popupView?.moodSeekBar?.progress = moodSeekBar.progress
             mainMoodText.visibility = View.VISIBLE
+            moodSeekBar.thumb = createThumbDrawable(context, 0)
+            moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
             setMoodText(progress, false, false)
             setMood(false)
         }
 
         moodSeekBar.setOnTouchListener(OnTouchListener { view, motionEvent ->
-            if(moodSeekBar.progress > 0){
+            if(moodSeekBar.progress != 0 || frameSeek.scaleX < 1){
                 openPopup()
                 true
             } else {
@@ -226,10 +228,11 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     fromUser: Boolean
                 ) {
                     popupView?.moodSeekBar?.progress = progress
+                    moodSeekBar.thumb = thumb
+                    moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                    Timber.e("onStartTrackingTouch")
                     if (moodSeekBar.progress != 0) {
                         openPopup()
                     } else {
