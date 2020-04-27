@@ -189,7 +189,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             popupView?.moodSeekBar?.progress = moodSeekBar.progress
             mainMoodText.visibility = View.VISIBLE
 
-            moodSeekBar.thumb = createThumbDrawable(context, 0)
+            val size = colorsArray?.size ?: 0
+            val part = 100 / (size - 1)
+            moodSeekBar.thumb = createThumbDrawable(context, colorsArray?.get(progress / part) ?: 0)
             moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
             setMoodText(progress, false, false)
             setMood(false)
