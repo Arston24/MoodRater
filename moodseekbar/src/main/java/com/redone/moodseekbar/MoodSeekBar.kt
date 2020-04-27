@@ -7,9 +7,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.TypedArray
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.graphics.drawable.*
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.shapes.RoundRectShape
@@ -170,10 +168,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         moodSeekBar.progressDrawable = progressDrawable
         popupView?.moodSeekBar?.progressDrawable = progressDrawable
-        val thumb = createThumbDrawable(context, 0)
-        popupView?.moodSeekBar?.thumb = thumb
+        val thumbDrawable = createThumbDrawable(context, 0)
+        popupView?.moodSeekBar?.thumb = thumbDrawable
         popupView?.moodSeekBar?.thumbOffset = context.dpToPx(12).toInt()
-        moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
 
         setupPopup()
 
@@ -191,6 +188,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         } else {
             popupView?.moodSeekBar?.progress = moodSeekBar.progress
             mainMoodText.visibility = View.VISIBLE
+
             moodSeekBar.thumb = createThumbDrawable(context, 0)
             moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
             setMoodText(progress, false, false)
@@ -198,7 +196,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
 
         moodSeekBar.setOnTouchListener(OnTouchListener { view, motionEvent ->
-            if(moodSeekBar.progress != 0 || frameSeek.scaleX < 1){
+            if (moodSeekBar.progress != 0 || frameSeek.scaleX < 1) {
                 openPopup()
                 true
             } else {
@@ -210,6 +208,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     setMoodText(progress, false, false)
+                    setColorToThumb(progress)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -228,8 +227,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     fromUser: Boolean
                 ) {
                     popupView?.moodSeekBar?.progress = progress
-                    moodSeekBar.thumb = thumb
-                    moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
+
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -238,16 +236,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     } else {
                         popupView?.setMoodButton?.visibility = View.VISIBLE
                         if (moodSeekBar.thumb.alpha == 0) {
-                            moodSeekBar.thumb.alpha = 255
                             popupView?.setOnTouchListener(rootTouchListener())
-
+                            moodSeekBar.thumb.alpha = 255
                             Blurry.with(context)
                                 .radius(12)
                                 .sampling(16)
                                 .async()
                                 .capture(rootScreenshot)
                                 .into(popupView?.imageForBlur)
-                            popupView?.moodSeekBar?.progress = moodSeekBar.progress
 
                             howMoodLabel.post {
                                 howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
@@ -255,9 +251,10 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                 setupPopup()
                                 popupView?.howMoodLabel?.y = howMoodLabelLocation[1] - getStatusBarHeight()
                                 popupWindow.showAtLocation(root, 0, 0, 0)
+                                moodSeekBar.thumb = thumbDrawable
+                                moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
 
                                 popupView?.howMoodLabel?.post {
-                                    popupView?.moodSeekBar?.progress = moodSeekBar.progress
 
                                     popupView?.howMoodLabel?.mainMoodText?.post {
                                         popupView?.howMoodLabel?.mainMoodText?.y = context.dpToPx(36)
@@ -435,8 +432,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         return View.OnTouchListener { v, event ->
             root.performClick()
             val seekBarPosition = IntArray(2)
-            frameSeek.getLocationOnScreen(seekBarPosition)
-            val seekBarWidth = moodSeekBar.width
+            popupView?.frameSeek?.getLocationOnScreen(seekBarPosition)
+            val seekBarWidth = popupView?.moodSeekBar?.width ?: 0
             val bias = seekBarWidth / 100
             val x = event?.x?.toInt() ?: 0
             val y = event?.y?.toInt() ?: 0
@@ -522,7 +519,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 if (progress in start..end) {
                     mainMoodText.text = item
                     popupView?.howMoodLabel?.mainMoodText?.text = item
-                    createThumbDrawable(context, colorsArray?.get(index) ?: 0)
+                    setColorToThumb(progress)
+//                    ring.paint.color = colorsArray?.get(index) ?: 0
                     popupView?.mainMoodText?.setTextColor(colorsArray?.get(index) ?: 0)
                     mainMoodText.setTextColor(colorsArray?.get(index) ?: 0)
                     val animator = if (start == 0) {
@@ -561,8 +559,10 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
                         })
                     }
+
                 }
                 start = end + 1
+
             }
         }
     }
@@ -590,7 +590,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         thumb.intrinsicHeight = context.dpToPx(60).toInt()
         thumb.paint.style = Paint.Style.FILL
         thumb.paint.color = Color.WHITE
-        thumb.setPadding(context.dpToPx(4).toInt(), context.dpToPx(4).toInt(), context.dpToPx(4).toInt(), context.dpToPx(4).toInt())
+        thumb.setPadding(context.dpToPx(5).toInt(), context.dpToPx(5).toInt(), context.dpToPx(5).toInt(), context.dpToPx(5).toInt())
 
         ring.intrinsicWidth = context.dpToPx(10).toInt()
         ring.intrinsicHeight = context.dpToPx(10).toInt()
@@ -599,6 +599,38 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         ring.paint.color = color
         return LayerDrawable(arrayOf<Drawable>(
             thumb, ring))
+    }
+
+    private fun setColorToThumb(progress: Int) {
+        popupView?.moodSeekBar?.post {
+            if (progress > 15) {
+                val barPos = IntArray(2)
+                popupView?.moodSeekBar?.getLocationInWindow(barPos)
+
+                val left = popupView?.moodSeekBar?.thumb?.bounds?.left ?: 0
+
+                val returnedBitmap = Bitmap.createBitmap(popupView?.width
+                    ?: 0, popupView?.height ?: 0, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(returnedBitmap)
+                val paint = Paint()
+                paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+                val height = popupView?.moodSeekBar?.height ?: 0
+
+                popupView?.rootPopupView?.draw(canvas)
+                val pixel = returnedBitmap.getPixel(left + barPos[0], barPos[1] + height / 2)
+                val r = Color.red(pixel)
+                val g = Color.green(pixel)
+                val b = Color.blue(pixel)
+
+                ring.paint.color = Color.rgb(r, g, b)
+                popupView?.moodSeekBar?.invalidate()
+
+            } else {
+                ring.paint.color = colorsArray?.get(0) ?: 0
+                popupView?.moodSeekBar?.invalidate()
+            }
+        }
+
     }
 
     companion object {
