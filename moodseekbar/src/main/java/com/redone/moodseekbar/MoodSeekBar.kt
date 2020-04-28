@@ -177,7 +177,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupWindow.isFocusable = true
         popupWindow.contentView?.isFocusableInTouchMode = true
 
-        popupWindow.contentView?.requestFocus()
 
         view.post {
             startY = view.y
@@ -188,7 +187,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         } else {
             popupView?.moodSeekBar?.progress = moodSeekBar.progress
             mainMoodText.visibility = View.VISIBLE
-
             val size = colorsArray?.size ?: 0
             val part = 100 / (size - 1)
             moodSeekBar.thumb = createThumbDrawable(context, colorsArray?.get(progress / part) ?: 0)
@@ -205,6 +203,12 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 false
             }
         })
+
+        popupWindow.contentView?.requestFocus()
+        popupWindow.contentView.setOnKeyListener { v, keyCode, event ->
+            Timber.e("click")
+            true
+        }
 
         popupView?.moodSeekBar?.setOnSeekBarChangeListener(
             object : SeekBar.OnSeekBarChangeListener {
@@ -228,6 +232,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     progress: Int,
                     fromUser: Boolean
                 ) {
+                    val size = colorsArray?.size ?: 0
+                    val part = 100 / (size - 1)
+                    ring.paint.color = colorsArray?.get(progress / part) ?: 0
                     popupView?.moodSeekBar?.progress = progress
 
                 }
@@ -624,12 +631,17 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 val g = Color.green(pixel)
                 val b = Color.blue(pixel)
 
+//                popupWindow.contentView.setBackgroundColor(Color.rgb(r, g, b))
                 ring.paint.color = Color.rgb(r, g, b)
                 popupView?.moodSeekBar?.invalidate()
 
+//                returnedBitmap.setPixel(left + barPos[0], barPos[1] + height / 2, Color.BLACK)
+//                popupView?.testImage?.visibility = View.VISIBLE
+//                popupView?.testImage?.setImageBitmap(returnedBitmap)
             } else {
                 ring.paint.color = colorsArray?.get(0) ?: 0
                 popupView?.moodSeekBar?.invalidate()
+//                popupWindow.contentView.setBackgroundColor(colorsArray?.get(0) ?: 0)
             }
         }
 
