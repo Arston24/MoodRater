@@ -160,8 +160,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupView?.textIntoBarStart?.text = startSeekbarText
         popupView?.titleMood?.text = titleTextQuestion
 
-
-
         root = view.rootView
 
         val progressDrawable = createProgressDrawable(context)
@@ -204,6 +202,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         val params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         dialog.addContentView(popupView!!, params)
+        dialog.window?.attributes?.windowAnimations = R.style.Dialog_Animation
 
         popupView?.isFocusableInTouchMode = true
         popupView?.requestFocus()
@@ -359,6 +358,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 popupView?.frameSeek?.animate()?.scaleX(1f)?.scaleY(1f)?.y(seekBarY + moodSeekBar.height)
                     ?.x(moodSeekBar.x - context.dpToPx(8))?.duration = DURATION
                 Handler().postDelayed({
+                    howMoodLabel.visibility = View.GONE
+                }, 100)
+                Handler().postDelayed({
                     popupView?.setOnTouchListener(rootTouchListener())
                     popupView?.setMoodButton?.visibility = View.VISIBLE
                 }, DURATION)
@@ -376,7 +378,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     }
 
     private fun setMood(animate: Boolean) {
-        Timber.e("setMood")
+        howMoodLabel.visibility = View.VISIBLE
         popupView?.setMoodButton?.visibility = View.GONE
         mainMoodText.visibility = View.VISIBLE
         popupView?.titleMood?.text = titleTextMood
@@ -425,7 +427,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     set.playTogether(translateAnimator, sizeAnimator)
                     set.start()
                     frameSeek.animate().scaleX(0.5f).scaleY(0.5f)
-                        .y(mainMoodText.y - context.dpToPx(16))
+                        .y(mainMoodText.y - context.dpToPx(14))
                         .x(view.width.toFloat() / 4).duration = 1
 
                     howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
@@ -433,7 +435,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     popupView?.howMoodLabel?.animate()?.y(howMoodLabelLocation[1] - statusBarHeight)?.duration = DURATION
 
                     popupView?.frameSeek?.animate()?.scaleX(0.5f)?.scaleY(0.5f)
-                        ?.y(mainMoodText.y - context.dpToPx(16))
+                        ?.y(mainMoodText.y - context.dpToPx(14))
                         ?.x(view.width.toFloat() / 4)?.duration =
                         500
                 }
@@ -566,7 +568,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                     setMood(true)
                                     Handler().postDelayed({
                                         popupView?.imageForBlur?.setImageBitmap(null)
-                                    }, 600)
+                                    }, 1000)
                                 }
                             }
 
