@@ -265,6 +265,14 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                 .async()
                                 .capture(rootScreenshot)
                                 .into(popupView?.imageForBlur)
+                            if(moodSeekBar.progress == 0){
+                                ring.paint.color = colorsArray?.get(0) ?: 0
+                                mainMoodText.setTextColor(colorsArray?.get(0) ?: 0)
+                                mainMoodText.visibility = View.VISIBLE
+                                popupView?.mainMoodText?.setTextColor(colorsArray?.get(0) ?: 0)
+                                mainMoodText.text = moodsArray?.get(0) ?: ""
+                                popupView?.mainMoodText?.text = moodsArray?.get(0) ?: ""
+                            }
 
                             howMoodLabel.post {
                                 howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
