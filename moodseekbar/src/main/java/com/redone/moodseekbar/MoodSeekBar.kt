@@ -208,6 +208,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         dialog.addContentView(popupView!!, params)
         dialog.window?.attributes?.windowAnimations = R.style.Dialog_Animation
 
+
+        popupView?.isFocusableInTouchMode = true
         popupView?.requestFocus()
         popupView?.setOnKeyListener { v, keyCode, event ->
             if(keyCode == KeyEvent.KEYCODE_BACK && event.action == MotionEvent.ACTION_DOWN){
@@ -432,8 +434,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
 
                     popupView?.howMoodLabel?.animate()?.y(howMoodLabelLocation[1] - statusBarHeight)?.duration = DURATION
-                    Timber.e("go to ${howMoodLabelLocation[1] - statusBarHeight} label ${howMoodLabelLocation[1]}")
-
                     popupView?.frameSeek?.animate()?.scaleX(0.5f)?.scaleY(0.5f)
                         ?.y(mainMoodText.y - context.dpToPx(14))
                         ?.x(view.width.toFloat() / 4)?.duration =
