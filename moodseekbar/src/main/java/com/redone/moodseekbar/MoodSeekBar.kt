@@ -17,7 +17,10 @@ import android.util.ArrayMap
 import android.util.AttributeSet
 import android.view.*
 import android.view.View.OnTouchListener
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.SeekBar
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import extension.dpToPx
 import jp.wasabeef.blurry.Blurry
@@ -200,11 +203,11 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         })
 
         val params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar)
+
         dialog.addContentView(popupView!!, params)
         dialog.window?.attributes?.windowAnimations = R.style.Dialog_Animation
 
-        popupView?.isFocusableInTouchMode = true
         popupView?.requestFocus()
         popupView?.setOnKeyListener { v, keyCode, event ->
             if(keyCode == KeyEvent.KEYCODE_BACK && event.action == MotionEvent.ACTION_DOWN){
@@ -268,7 +271,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                 popupView?.howMoodLabel?.y = howMoodLabelLocation[1] - statusBarHeight
                                 dialog.show()
 
-//                                    popupWindow.showAtLocation(root, 0, 0, 0)
                                 moodSeekBar.thumb = thumbDrawable
                                 moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
 
@@ -322,11 +324,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         setupPopup()
 
         popupView?.howMoodLabel?.y = howMoodLabelLocation[1] - statusBarHeight
-//        popupWindow.showAtLocation(root, 0, 0, 0)
         dialog.show()
-
         popupView?.howMoodLabel?.post {
-
             popupView?.howMoodLabel?.mainMoodText?.post {
                 popupView?.howMoodLabel?.mainMoodText?.x = titleMood?.x ?: 0f
                 popupView?.howMoodLabel?.mainMoodText?.y = context.dpToPx(31)
@@ -433,6 +432,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
 
                     popupView?.howMoodLabel?.animate()?.y(howMoodLabelLocation[1] - statusBarHeight)?.duration = DURATION
+                    Timber.e("go to ${howMoodLabelLocation[1] - statusBarHeight} label ${howMoodLabelLocation[1]}")
 
                     popupView?.frameSeek?.animate()?.scaleX(0.5f)?.scaleY(0.5f)
                         ?.y(mainMoodText.y - context.dpToPx(14))
@@ -626,7 +626,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupView?.moodSeekBar?.post {
             if (progress > 15) {
                 val barPos = IntArray(2)
-                popupView?.moodSeekBar?.getLocationInWindow(barPos)
+                popupView?.moodSeekBar?.getLocationOnScreen(barPos)
 
                 val left = popupView?.moodSeekBar?.thumb?.bounds?.left ?: 0
 
@@ -638,7 +638,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 val height = popupView?.moodSeekBar?.height ?: 0
 
                 popupView?.rootPopupView?.draw(canvas)
-                val pixel = returnedBitmap.getPixel(left + barPos[0], barPos[1] + height / 2)
+                val pixel = returnedBitmap.getPixel(left + barPos[0], barPos[1] + height / 2 - statusBarHeight.toInt())
                 val r = Color.red(pixel)
                 val g = Color.green(pixel)
                 val b = Color.blue(pixel)
