@@ -212,7 +212,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupView?.isFocusableInTouchMode = true
         popupView?.requestFocus()
         popupView?.setOnKeyListener { v, keyCode, event ->
-            if(keyCode == KeyEvent.KEYCODE_BACK && event.action == MotionEvent.ACTION_DOWN){
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == MotionEvent.ACTION_DOWN) {
                 setMood(true)
             }
             true
@@ -265,7 +265,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                 .async()
                                 .capture(rootScreenshot)
                                 .into(popupView?.imageForBlur)
-                            if(moodSeekBar.progress == 0){
+                            if (moodSeekBar.progress == 0) {
                                 ring.paint.color = colorsArray?.get(0) ?: 0
                                 mainMoodText.setTextColor(colorsArray?.get(0) ?: 0)
                                 mainMoodText.visibility = View.VISIBLE
@@ -287,7 +287,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                                 popupView?.howMoodLabel?.post {
 
                                     popupView?.howMoodLabel?.mainMoodText?.post {
-                                        popupView?.howMoodLabel?.mainMoodText?.y = context.dpToPx(36)
+                                        popupView?.howMoodLabel?.mainMoodText?.y = context.dpToPx(34)
 
                                         popupView?.moodSeekBar?.progress = moodSeekBar.progress
 
