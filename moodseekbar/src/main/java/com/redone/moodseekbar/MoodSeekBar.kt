@@ -268,7 +268,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                             if (moodSeekBar.progress == 0) {
                                 ring.paint.color = colorsArray?.get(0) ?: 0
                                 mainMoodText.setTextColor(colorsArray?.get(0) ?: 0)
-                                mainMoodText.visibility = View.VISIBLE
                                 popupView?.mainMoodText?.setTextColor(colorsArray?.get(0) ?: 0)
                                 mainMoodText.text = moodsArray?.get(0) ?: ""
                                 popupView?.mainMoodText?.text = moodsArray?.get(0) ?: ""
@@ -283,9 +282,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
                                 moodSeekBar.thumb = thumbDrawable
                                 moodSeekBar.thumbOffset = context.dpToPx(12).toInt()
-
                                 popupView?.howMoodLabel?.post {
-
                                     popupView?.howMoodLabel?.mainMoodText?.post {
                                         popupView?.howMoodLabel?.mainMoodText?.y = context.dpToPx(34)
 
@@ -421,6 +418,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     translateAnimator.duration = DURATION
                     translateAnimator.addUpdateListener {
                         val value = translateAnimator.animatedValue as Float
+                        Timber.e("main ${mainMoodText.x}, pop ${popupView?.mainMoodText?.x}")
                         mainMoodText.x = value
                         popupView?.mainMoodText?.x = value
                     }
