@@ -255,6 +255,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     if (moodSeekBar.progress != 0) {
                         openPopup()
                     } else {
+                        popupView?.mainMoodText?.visibility = View.VISIBLE
                         popupView?.setMoodButton?.visibility = View.VISIBLE
                         if (moodSeekBar.thumb.alpha == 0) {
                             popupView?.setOnTouchListener(rootTouchListener())
@@ -308,6 +309,28 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         popupView?.setMoodButton?.setOnClickListener {
             setMood(true)
+        }
+
+        popupView?.cancelButton?.setOnClickListener {
+            val seekBarY = popupView?.moodSeekBar?.y ?: 0f
+            frameSeek.scaleX = 1f
+            frameSeek.scaleY = 1f
+            frameSeek.x = moodSeekBar.x - context.dpToPx(8)
+            frameSeek.y = seekBarY + moodSeekBar.height
+
+            moodSeekBar.progress = 0
+            popupView?.moodSeekBar?.progress = 0
+            popupView?.moodSeekBar?.thumb?.alpha = 0
+            moodSeekBar.thumb.alpha = 0
+            popupView?.mainMoodText?.visibility = View.GONE
+            mainMoodText.visibility = View.GONE
+            popupView?.howMoodLabel?.animate()?.y(howMoodLabelLocation[1] - statusBarHeight)?.duration = DURATION
+            howMoodLabel.visibility = View.VISIBLE
+
+            Handler().postDelayed({
+                popupView?.imageForBlur?.setImageBitmap(null)
+                dialog.dismiss()
+            }, 600)
         }
 
     }
@@ -387,6 +410,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         howMoodLabel.visibility = View.VISIBLE
         popupView?.setMoodButton?.visibility = View.GONE
         mainMoodText.visibility = View.VISIBLE
+        popupView?.mainMoodText?.visibility = View.VISIBLE
         popupView?.titleMood?.text = titleTextMood
         titleMood?.text = titleTextMood
 
@@ -418,7 +442,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     translateAnimator.duration = DURATION
                     translateAnimator.addUpdateListener {
                         val value = translateAnimator.animatedValue as Float
-                        Timber.e("main ${mainMoodText.x}, pop ${popupView?.mainMoodText?.x}")
                         mainMoodText.x = value
                         popupView?.mainMoodText?.x = value
                     }

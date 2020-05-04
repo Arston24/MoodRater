@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <ImageView
         android:id="@+id/imageForBlur"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:visibility="visible" />
-
 
     <FrameLayout
         android:id="@+id/howMoodLabel"
@@ -91,12 +91,22 @@
         android:textColor="#F3B600"
         android:visibility="gone" />
 
-    <TextView
+    <ImageView
         android:id="@+id/setMoodButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/button_shape"
+        android:src="@drawable/button_shape"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/cancel_btn_shape"
         android:visibility="visible" />
 </FrameLayout>
