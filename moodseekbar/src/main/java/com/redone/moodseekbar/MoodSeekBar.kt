@@ -540,7 +540,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     set.playTogether(translateAnimator, sizeAnimator)
                     set.start()
                     frameSeek.animate().scaleX(0.5f).scaleY(0.5f)
-                        .y(mainMoodText.y - context.dpToPx(14))
+                        .y(mainMoodText.y - context.dpToPx(12))
                         .x(view.width.toFloat() / 4).duration = 1
 
 
@@ -548,7 +548,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
                     popupView?.howMoodLabel?.animate()?.y(howMoodLabelLocation[1] - statusBarHeight)?.duration = DURATION
                     popupView?.frameSeek?.animate()?.scaleX(0.5f)?.scaleY(0.5f)
-                        ?.y(mainMoodText.y - context.dpToPx(14))
+                        ?.y(mainMoodText.y - context.dpToPx(12))
                         ?.x(view.width.toFloat() / 4)?.duration =
                         DURATION
                 }
