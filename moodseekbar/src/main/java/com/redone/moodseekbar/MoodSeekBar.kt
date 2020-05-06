@@ -558,7 +558,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 Handler().postDelayed({
                     popupView?.imageForBlur?.setImageBitmap(null)
                     dialog.dismiss()
-                }, 350)
+                }, 500)
             }
         }
     }
