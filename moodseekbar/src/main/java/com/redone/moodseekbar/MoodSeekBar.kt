@@ -660,7 +660,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     mainMoodText.setTextColor(colorsArray?.get(index) ?: 0)
                     val animator = if (start == 0) {
                         ValueAnimator.ofInt(progress, 0)
-                    } else if (progress < 90) {
+                    } else if (progress < 87) {
                         ValueAnimator.ofInt(progress, center)
                     } else {
                         ValueAnimator.ofInt(progress, 100)
