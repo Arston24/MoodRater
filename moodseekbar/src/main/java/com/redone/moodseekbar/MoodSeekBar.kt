@@ -97,6 +97,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     var startY: Float = 0f
     private val thumb = ShapeDrawable(OvalShape())
     private val ring = ShapeDrawable(OvalShape())
+    var progressDrawable: Drawable? = null
+    var thumbDrawable: Drawable? = null
 
 
     init {
@@ -165,12 +167,11 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
         root = view.rootView
 
-        val progressDrawable = createProgressDrawable(context)
-
+        progressDrawable = createProgressDrawable(context)
 
         moodSeekBar.progressDrawable = progressDrawable
         popupView?.moodSeekBar?.progressDrawable = progressDrawable
-        val thumbDrawable = createThumbDrawable(context, 0)
+        thumbDrawable = createThumbDrawable(context, 0)
         popupView?.moodSeekBar?.thumb = thumbDrawable
         popupView?.moodSeekBar?.thumbOffset = context.dpToPx(12).toInt()
 
@@ -350,6 +351,12 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         if (dialog.isShowing == true) {
             return
         }
+
+        textIntoBarStart?.visibility = View.VISIBLE
+        textIntoBarEnd?.visibility = View.VISIBLE
+        popupView?.textIntoBarStart?.visibility = View.VISIBLE
+        popupView?.textIntoBarEnd?.visibility = View.VISIBLE
+
         popupView?.mainMoodText?.visibility = View.VISIBLE
         popupView?.titleMood?.visibility = View.VISIBLE
 
@@ -372,6 +379,46 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         dialog.show()
         popupView?.howMoodLabel?.post {
             popupView?.howMoodLabel?.mainMoodText?.post {
+
+                val thumbLeft = thumbDrawable?.bounds?.left ?: 0
+                val thumbRight = thumbDrawable?.bounds?.right ?: 0
+                val thumbTop = thumbDrawable?.bounds?.top ?: 0
+                val thumbBottom = thumbDrawable?.bounds?.bottom ?: 0
+
+                val thumbAnimator = ValueAnimator.ofInt(0, 30)
+                thumbAnimator.addUpdateListener {
+                    val value = thumbAnimator.animatedValue as Int
+
+                    val additional = if (popupView?.moodSeekBar?.progress == 0) {
+                        -value/10
+                    } else if (popupView?.moodSeekBar?.progress == 100) {
+                        value/6
+                    } else {
+                        0
+                    }
+                    thumbDrawable?.setBounds(thumbLeft - value - additional, thumbTop - value, thumbRight + value - additional, thumbBottom + value)
+                    popupView?.moodSeekBar?.invalidate()
+                }
+
+                thumbAnimator.duration = DURATION
+                thumbAnimator.start()
+
+
+                val progressLeft = progressDrawable?.bounds?.left ?: 0
+                val progressRight = progressDrawable?.bounds?.right ?: 0
+                val progressTop = progressDrawable?.bounds?.top ?: 0
+                val progressBottom = progressDrawable?.bounds?.bottom ?: 0
+
+                val progressAnimator = ValueAnimator.ofInt(0, 30)
+                progressAnimator.addUpdateListener {
+                    val value = progressAnimator.animatedValue as Int
+                    progressDrawable?.setBounds(progressLeft, progressTop - value, progressRight, progressBottom + value)
+                    popupView?.moodSeekBar?.invalidate()
+                }
+                progressAnimator.duration = DURATION
+                progressAnimator.start()
+
+
                 popupView?.howMoodLabel?.animate()?.y((screenHeight - statusBarHeight) / 2.toFloat() - howMoodLabel.height / 2)?.duration = DURATION
                 val seekBarY = popupView?.moodSeekBar?.y ?: 0f
                 popupView?.frameSeek?.animate()?.scaleX(1f)?.scaleY(1f)?.y(seekBarY + moodSeekBar.height)
@@ -412,6 +459,11 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         popupView?.titleMood?.text = titleTextMood
         titleMood?.text = titleTextMood
 
+        textIntoBarStart?.visibility = View.GONE
+        textIntoBarEnd?.visibility = View.GONE
+        popupView?.textIntoBarStart?.visibility = View.GONE
+        popupView?.textIntoBarEnd?.visibility = View.GONE
+
         frameSeek.post {
             if (!animate) {
                 view.y = startY
@@ -432,6 +484,41 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 frameSeek.x = view.width.toFloat() / 4
                 popupView?.frameSeek?.x = view.width.toFloat() / 4
             } else {
+                val thumbLeft = thumbDrawable?.bounds?.left ?: 0
+                val thumbRight = thumbDrawable?.bounds?.right ?: 0
+                val thumbTop = thumbDrawable?.bounds?.top ?: 0
+                val thumbBottom = thumbDrawable?.bounds?.bottom ?: 0
+
+                val thumbAnimator = ValueAnimator.ofInt(0, 30)
+                thumbAnimator.addUpdateListener {
+                    val value = thumbAnimator.animatedValue as Int
+                    val additional = if (popupView?.moodSeekBar?.progress == 0) {
+                        -value/10
+                    } else if (popupView?.moodSeekBar?.progress == 100) {
+                        value/6
+                    } else {
+                        0
+                    }
+                    thumbDrawable?.setBounds(thumbLeft + value + additional, thumbTop + value, thumbRight - value + additional, thumbBottom - value)
+                    popupView?.moodSeekBar?.invalidate()
+                }
+                thumbAnimator.duration = DURATION
+                thumbAnimator.start()
+
+                val progressLeft = progressDrawable?.bounds?.left ?: 0
+                val progressRight = progressDrawable?.bounds?.right ?: 0
+                val progressTop = progressDrawable?.bounds?.top ?: 0
+                val progressBottom = progressDrawable?.bounds?.bottom ?: 0
+
+                val progressAnimator = ValueAnimator.ofInt(0, 30)
+                progressAnimator.addUpdateListener {
+                    val value = progressAnimator.animatedValue as Int
+                    progressDrawable?.setBounds(progressLeft, progressTop + value, progressRight, progressBottom - value)
+                    popupView?.moodSeekBar?.invalidate()
+                }
+                progressAnimator.duration = DURATION
+                progressAnimator.start()
+
                 view.animate().y(startY).duration = DURATION
                 val translateAnimator = ValueAnimator.ofFloat(popupView?.mainMoodText?.x
                     ?: 0f, popupView?.titleMood?.x ?: 0f)
@@ -455,6 +542,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     frameSeek.animate().scaleX(0.5f).scaleY(0.5f)
                         .y(mainMoodText.y - context.dpToPx(14))
                         .x(view.width.toFloat() / 4).duration = 1
+
 
                     howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
 
@@ -572,8 +660,10 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     mainMoodText.setTextColor(colorsArray?.get(index) ?: 0)
                     val animator = if (start == 0) {
                         ValueAnimator.ofInt(progress, 0)
-                    } else {
+                    } else if (progress < 90) {
                         ValueAnimator.ofInt(progress, center)
+                    } else {
+                        ValueAnimator.ofInt(progress, 100)
                     }
                     if (animate && !animator.isRunning) {
                         animator.duration = 100
