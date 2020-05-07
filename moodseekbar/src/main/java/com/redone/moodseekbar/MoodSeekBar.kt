@@ -195,7 +195,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
 
         moodSeekBar.setOnTouchListener(OnTouchListener { view, motionEvent ->
-            if(dialog.isShowing){
+            if (dialog.isShowing) {
                 true
             }
             if (frameSeek.scaleX < 1) {
@@ -326,31 +326,33 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
 
         popupView?.cancelButton?.setOnClickListener {
+            if (!barIsAnimating) {
+                barIsAnimating = true
+                howMoodLabel.visibility = View.VISIBLE
+                titleMood?.text = titleTextQuestion
+                val seekBarY = popupView?.moodSeekBar?.y ?: 0f
+                frameSeek.scaleX = 1f
+                frameSeek.scaleY = 1f
+                frameSeek.x = moodSeekBar.x - context.dpToPx(8)
+                frameSeek.y = seekBarY + moodSeekBar.height
+                moodSeekBar.progress = 0
+                popupView?.moodSeekBar?.progress = 0
+                popupView?.moodSeekBar?.thumb?.alpha = 0
+                moodSeekBar.thumb.alpha = 0
+                popupView?.mainMoodText?.visibility = View.GONE
+                mainMoodText.visibility = View.GONE
+                popupView?.titleMood?.visibility = View.GONE
+                howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
 
-            howMoodLabel.visibility = View.VISIBLE
-            titleMood?.text = titleTextQuestion
-            val seekBarY = popupView?.moodSeekBar?.y ?: 0f
-            frameSeek.scaleX = 1f
-            frameSeek.scaleY = 1f
-            frameSeek.x = moodSeekBar.x - context.dpToPx(8)
-            frameSeek.y = seekBarY + moodSeekBar.height
-            moodSeekBar.progress = 0
-            popupView?.moodSeekBar?.progress = 0
-            popupView?.moodSeekBar?.thumb?.alpha = 0
-            moodSeekBar.thumb.alpha = 0
-            popupView?.mainMoodText?.visibility = View.GONE
-            mainMoodText.visibility = View.GONE
-            popupView?.titleMood?.visibility = View.GONE
-            howMoodLabel.getLocationOnScreen(howMoodLabelLocation)
+                popupView?.howMoodLabel?.animate()?.y(howMoodLabelLocation[1] - statusBarHeight)?.duration = DURATION
 
-            popupView?.howMoodLabel?.animate()?.y(howMoodLabelLocation[1] - statusBarHeight)?.duration = DURATION
-
-            Handler().postDelayed({
-                popupView?.imageForBlur?.setImageBitmap(null)
-                dialog.dismiss()
-            }, 350)
+                Handler().postDelayed({
+                    popupView?.imageForBlur?.setImageBitmap(null)
+                    dialog.dismiss()
+                    barIsAnimating = false
+                }, 350)
+            }
         }
-
     }
 
     fun openPopup() {
@@ -599,50 +601,53 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
 
     private fun rootTouchListener(): View.OnTouchListener {
         return View.OnTouchListener { v, event ->
-            root.performClick()
-            val seekBarPosition = IntArray(2)
-            popupView?.frameSeek?.getLocationOnScreen(seekBarPosition)
-            val seekBarWidth = popupView?.moodSeekBar?.width ?: 0
-            val bias = seekBarWidth / 100
-            val x = event?.x?.toInt() ?: 0
-            val y = event?.y?.toInt() ?: 0
-            when (event?.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    val progress = when {
-                        x < seekBarPosition[0] -> {
-                            0
+            if (!barIsAnimating) {
+                root.performClick()
+                val seekBarPosition = IntArray(2)
+                popupView?.frameSeek?.getLocationOnScreen(seekBarPosition)
+                val seekBarWidth = popupView?.moodSeekBar?.width ?: 0
+                val bias = seekBarWidth / 100
+                val x = event?.x?.toInt() ?: 0
+                val y = event?.y?.toInt() ?: 0
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        val progress = when {
+                            x < seekBarPosition[0] -> {
+                                0
+                            }
+                            x > (seekBarPosition[0] + seekBarWidth) -> {
+                                100
+                            }
+                            else -> {
+                                (x - seekBarPosition[0]) / bias
+                            }
                         }
-                        x > (seekBarPosition[0] + seekBarWidth) -> {
-                            100
-                        }
-                        else -> {
-                            (x - seekBarPosition[0]) / bias
-                        }
+                        moodSeekBar.progress = progress
+                        popupView?.moodSeekBar?.progress = progress
                     }
-                    moodSeekBar.progress = progress
-                    popupView?.moodSeekBar?.progress = progress
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val progress = when {
-                        x < seekBarPosition[0] -> {
-                            0
+                    MotionEvent.ACTION_MOVE -> {
+                        val progress = when {
+                            x < seekBarPosition[0] -> {
+                                0
+                            }
+                            x > (seekBarPosition[0] + seekBarWidth) -> {
+                                100
+                            }
+                            else -> {
+                                (x - seekBarPosition[0]) / bias
+                            }
                         }
-                        x > (seekBarPosition[0] + seekBarWidth) -> {
-                            100
-                        }
-                        else -> {
-                            (x - seekBarPosition[0]) / bias
-                        }
+                        moodSeekBar.progress = progress
+                        popupView?.moodSeekBar?.progress = progress
                     }
-                    moodSeekBar.progress = progress
-                    popupView?.moodSeekBar?.progress = progress
+                    MotionEvent.ACTION_UP -> {
+                        barIsAnimating = true
+                        popupView?.setMoodButton?.visibility = View.GONE
+                        popupView?.setOnTouchListener(null)
+                        setMoodText(popupView?.moodSeekBar?.progress ?: 0, true, true)
+                    }
                 }
-                MotionEvent.ACTION_UP -> {
-                    barIsAnimating = true
-                    popupView?.setMoodButton?.visibility = View.GONE
-                    popupView?.setOnTouchListener(null)
-                    setMoodText(popupView?.moodSeekBar?.progress ?: 0, true, true)
-                }
+
             }
             true
         }
