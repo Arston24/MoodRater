@@ -638,6 +638,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     popupView?.moodSeekBar?.progress = progress
                 }
                 MotionEvent.ACTION_UP -> {
+                    barIsAnimating = true
                     popupView?.setMoodButton?.visibility = View.GONE
                     popupView?.setOnTouchListener(null)
                     setMoodText(popupView?.moodSeekBar?.progress ?: 0, true, true)
