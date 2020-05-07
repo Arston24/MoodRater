@@ -245,7 +245,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 ) {
                     val size = colorsArray?.size ?: 0
                     val part = 100 / (size - 1)
-                    ring.paint.color = colorsArray?.get(progress / part) ?: 0
                     popupView?.moodSeekBar?.progress = progress
                 }
 
