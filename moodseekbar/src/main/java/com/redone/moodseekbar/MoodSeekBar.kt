@@ -226,7 +226,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                     setMoodText(progress, false, false)
-                    setColorToThumb(progress)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -562,6 +561,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
     }
 
+
     private fun rootTouchListener(): View.OnTouchListener {
         return View.OnTouchListener { v, event ->
             root.performClick()
@@ -653,8 +653,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 if (progress in start..end) {
                     mainMoodText.text = item
                     popupView?.howMoodLabel?.mainMoodText?.text = item
-                    setColorToThumb(progress)
-//                    ring.paint.color = colorsArray?.get(index) ?: 0
+                    ring.paint.color = colorsArray?.get(index) ?: 0
                     popupView?.mainMoodText?.setTextColor(colorsArray?.get(index) ?: 0)
                     mainMoodText.setTextColor(colorsArray?.get(index) ?: 0)
                     val animator = if (start == 0) {
