@@ -266,6 +266,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                         popupView?.mainMoodText?.alpha = 0f
                         popupView?.titleMood?.alpha = 0f
                         popupView?.setMoodButton?.visibility = View.VISIBLE
+                        popupView?.cancelButton?.visibility = View.VISIBLE
                         if (moodSeekBar.thumb.alpha == 0) {
                             popupView?.setOnTouchListener(rootTouchListener())
                             moodSeekBar.thumb.alpha = 255
@@ -322,7 +323,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             })
 
         popupView?.setMoodButton?.setOnClickListener {
-            setMood(true)
+            if(!barIsAnimating){
+                setMood(true)
+            }
         }
 
         popupView?.cancelButton?.setOnClickListener {
@@ -440,6 +443,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 Handler().postDelayed({
                     popupView?.setOnTouchListener(rootTouchListener())
                     popupView?.setMoodButton?.visibility = View.VISIBLE
+                    popupView?.cancelButton?.visibility = View.VISIBLE
                     barIsAnimating = false
                 }, DURATION)
             }
@@ -456,6 +460,8 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     }
 
     private fun setMood(animate: Boolean) {
+        barIsAnimating = true
+        popupView?.cancelButton?.visibility = View.GONE
         popupView?.mainMoodText?.visibility = View.GONE
         popupView?.titleMood?.visibility = View.GONE
 
@@ -643,6 +649,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                     MotionEvent.ACTION_UP -> {
                         barIsAnimating = true
                         popupView?.setMoodButton?.visibility = View.GONE
+                        popupView?.cancelButton?.visibility = View.GONE
                         popupView?.setOnTouchListener(null)
                         setMoodText(popupView?.moodSeekBar?.progress ?: 0, true, true)
                     }
@@ -720,9 +727,6 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                             override fun onAnimationEnd(animation: Animator?) {
                                 if (close) {
                                     setMood(true)
-                                    Handler().postDelayed({
-                                        popupView?.imageForBlur?.setImageBitmap(null)
-                                    }, 1000)
                                 }
                             }
 
