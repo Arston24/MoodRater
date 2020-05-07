@@ -99,6 +99,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
     private val ring = ShapeDrawable(OvalShape())
     var progressDrawable: Drawable? = null
     var thumbDrawable: Drawable? = null
+    var barIsAnimating = false
 
     init {
         val a: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.MoodSeekBar, 0, 0)
@@ -194,13 +195,21 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
         }
 
         moodSeekBar.setOnTouchListener(OnTouchListener { view, motionEvent ->
-            if (moodSeekBar.progress != 0 || frameSeek.scaleX < 1) {
+            if(dialog.isShowing){
+                true
+            }
+            if (frameSeek.scaleX < 1) {
+                barIsAnimating = true
                 openPopup()
                 true
             } else {
                 false
             }
         })
+
+        popupView?.moodSeekBar?.setOnTouchListener { view, motionEvent ->
+            barIsAnimating
+        }
 
         val params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         dialog = Dialog(context, android.R.style.Theme_Black_NoTitleBar)
@@ -429,6 +438,7 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
                 Handler().postDelayed({
                     popupView?.setOnTouchListener(rootTouchListener())
                     popupView?.setMoodButton?.visibility = View.VISIBLE
+                    barIsAnimating = false
                 }, DURATION)
             }
         }
@@ -462,13 +472,9 @@ class MoodSeekBar(context: Context, attrs: AttributeSet) : FrameLayout(context, 
             if (!animate) {
                 view.y = startY
                 mainMoodText.x = titleMood?.x ?: 0f
-//                popupView?.mainMoodText?.x = titleMood?.x ?: 0f
                 mainMoodText.textSize = 22f
-//                popupView?.mainMoodText?.textSize = 22f
-
                 frameSeek.scaleX = 0.5f
                 popupView?.frameSeek?.scaleX = 0.5f
-
                 frameSeek.scaleY = 0.5f
                 popupView?.frameSeek?.scaleY = 0.5f
 
